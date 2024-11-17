@@ -1,0 +1,18 @@
+1. Configuracion de entorno de desarrollo.
+- Tener instalado php, python y salenium.
+- Configurar un servidor web local => apache
+
+2. Crea la estructura basica del proyecto.
+Crea las carpetas necesarias para organizar tu codigo:
+
+src/
+├── admin/
+├── auth/
+├── public/
+├── scraping/
+└── templates/
+
+3. Implementa el scraping de datos:
+- Crea un script en Python utilizando Selenium para extraer los datos de la web publica.
+- Guardar los datos extraidos en un formato intermedio (CSV o XML)
+- Insertar los datos en la base de datos del proyecto (base de datos)
