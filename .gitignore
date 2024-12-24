@@ -2,6 +2,13 @@
 # Cristian git-ignore
 # Para entornos virtuales
 env/
+# Vscode agregue color a vscode 
+.vscode
+
+### Composer ###
+composer.phar
+/vendor/
+./vendor/
 
 # User-specific stuff
 .idea/**/workspace.xml
