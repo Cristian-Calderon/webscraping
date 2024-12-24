@@ -16,7 +16,7 @@ src/
 Navegamos al directorio de tu proyecto
 
 ```bash
-cd /webscraping
+cd /var/www/webscraping.local
 ```
 
 Creamos el entorno virtual
@@ -40,6 +40,12 @@ Instalar dependencias dentro del entorno
 ```bash
 pip install selenium webdriver-manager
 ```
+
+Driver google antes de instalar activar entorno virtual
+```bash
+pip install webdriver-manager
+```
+
 Ahora estas dependecias estaran aisladas para este proyecto
 
 Ejecutar tu script dentro del entorno

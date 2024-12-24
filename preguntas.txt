@@ -1,0 +1,44 @@
+Pasemos al punto numero 2 Scraping de datos, 1 disena el modelo de datos=> 
+La pagina que voy a hacer Scraping es dotabuff: las tablas que todavia no he podido relacionar son las siguientes:
+
+Tabla: User
+id int
+name-user varchar(50)
+faceta
+nivel varchar(12)
+tasa-de-victoria varchar(12)
+tasa-seleccion varchar(10)
+tasa-prohibicion varchar(10)
+url-hero text
+url-faceta text
+
+Tabla: list-heroes
+id int
+name varchar(50)
+faceta varchar(50)
+nivel varchar(12)
+tasa-de-victoria varchar(12)
+tasa-seleccion varchar(10)
+tasa-prohibicion varchar(10)
+url-hero text
+url- faceta text
+
+Tabla: heroes
+id int
+name varchar(50)
+faceta
+nivel varchar(12)
+tasa-de-victoria varchar(12)
+tasa-seleccion varchar(10)
+tasa-prohibicion varchar(10)
+url-hero text
+url-faceta text
+
+Tabla: faceta
+id int
+name varchar(50)
+faceta
+nivel varchar(12)
+tasa-de-victoria
+
+si tienes alguna recomendacion de como lo harias me ayudaria.

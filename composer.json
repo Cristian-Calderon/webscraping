@@ -1,0 +1,19 @@
+{
+    "name": "cris/webscraping.local",
+    "autoload": {
+        "psr-4": {
+            "Cris\\WebscrapingLocal\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "cris-ubuntu",
+            "email": "cdcalderonrojas@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.16",
+        "firebase/php-jwt": "^6.10",
+        "symfony/routing": "^7.2"
+    }
+}

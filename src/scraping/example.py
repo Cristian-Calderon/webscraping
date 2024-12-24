@@ -14,7 +14,7 @@ service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # Abrir Google
-driver.get("https://www.google.com")
+driver.get("https://www.dotabuff.com/players/110208369")
 
 # Imprimir el título de la página
 print("Título de la página:", driver.title)
