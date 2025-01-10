@@ -1,0 +1,25 @@
+<div class="tw-max-w-full">
+    <div class="tw-mb-3">
+        <div class="tw-flex tw-flex-row tw-flex-nowrap tw-items-center tw-justify-start tw-gap-2">
+            <img src="/assets/hero_str.png" alt="Fuerza" class="tw-h-5 tw-w-auto"/>
+            <div class="tw-font-semibold tw-leading-none">Fuerza</div>
+        </div>
+    </div>
+    <div
+        class="tw-grid tw-grid-cols-[repeat(auto-fill,minmax(64px,1fr))] tw-gap-2 sm:tw-grid-cols-[repeat(auto-fill,minmax(48px,1fr))]">
+        <a href="/heroes/alchemist" tabindex="-1"
+            class="tw-group tw-relative tw-block tw-aspect-video tw-w-full tw-rounded-sm tw-bg-background tw-shadow-sm tw-shadow-black/20 tw-transition-transform tw-duration-100 hover:tw-z-10 hover:tw-scale-150">
+            <div
+                class="tw-pointer-events-none tw-absolute tw-left-[-4px] tw-top-[-4px] tw-flex tw-h-[calc(100%+28px)] tw-w-[calc(100%+8px)] tw-flex-col tw-justify-end tw-rounded-md tw-bg-background tw-opacity-0 tw-shadow tw-shadow-black tw-transition-opacity tw-duration-100 group-hover:tw-opacity-100">
+                <div
+                    class="tw-flex tw-h-[24px] tw-w-full tw-items-center tw-justify-center tw-p-0.5">
+                    <div
+                        class="tw-w-full tw-text-center tw-text-[7px] tw-leading-none tw-text-white">
+                        Alchemist</div>
+                </div>
+            </div>
+            <img src="/assets/heroes/alchemist.jpg" alt=""
+                class="tw-relative tw-size-full tw-rounded-sm"/>
+        </a>
+    </div>
+</div>

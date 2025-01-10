@@ -42,3 +42,17 @@ nivel varchar(12)
 tasa-de-victoria
 
 si tienes alguna recomendacion de como lo harias me ayudaria.
+
+
+
+
+
+tengo que hacer scraping de una pagina y luego esa informacion pasarla a una base de datos ya tengo las 3 etiquetas que quiero guardar me puedes dar un ejemplo en python, estas con las 3 etiquetas que necesito: 
+
+nombre yo necesito por ejemplo que se guarde el nombre Alchemist y tambien hay otros heroes pero las etiquetas div son iguales las demas => 
+<div class="tw-w-full tw-text-center tw-text-[7px] tw-leading-none tw-text-white">Alchemist</div>
+
+link-imagen necesito que se guarde la ruta del src => 
+<img src="/assets/heroes/alchemist.jpg" alt class="tw-relative tw-size-full tw-rounded-sm">
+
+

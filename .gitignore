@@ -1,7 +1,7 @@
 
 # Cristian git-ignore
 # Para entornos virtuales
-env/
+entvirtual/
 # Vscode agregue color a vscode 
 .vscode
 

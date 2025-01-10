@@ -2,6 +2,11 @@
 - Tener instalado php, python y salenium.
 - Configurar un servidor web local => apache
 
+Para ver la version de php => php --version
+Para ver la version de python => python3 --version
+Para ver la version de selenium necesitamos instalar pip => pip3 --version
+
+
 2. Crea la estructura basica del proyecto.
 Crea las carpetas necesarias para organizar tu codigo:
 
@@ -21,12 +26,12 @@ cd /var/www/webscraping.local
 
 Creamos el entorno virtual
 ```bash
-python3 -m venv env
+python3 -m venv entvirtual
 ```
 
 Activar entorno virtual En linux/macOS
 ```bash
-source env/bin/activate
+source entvirtual/bin/activate
 ```
 
 Cuando el entorno esté activo, verás el nombre del entorno (env) al inicio de tu terminal, así:
@@ -44,6 +49,11 @@ pip install selenium webdriver-manager
 Driver google antes de instalar activar entorno virtual
 ```bash
 pip install webdriver-manager
+```
+
+Instalar Selenium panda para guardar en csv
+```bash
+pip install selenium pandas
 ```
 
 Ahora estas dependecias estaran aisladas para este proyecto
