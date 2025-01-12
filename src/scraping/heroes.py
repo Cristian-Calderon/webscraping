@@ -14,17 +14,19 @@ url = "https://es.dotabuff.com/heroes"  # Reemplaza con la URL real
 driver.get(url)
 time.sleep(5)  # Espera para permitir que la página cargue completamente
 
-# Encuentra los elementos para nombres y rutas de imágenes
-nombres = driver.find_elements(By.CSS_SELECTOR, "div.tw-w-full.tw-text-center.tw-text-\[7px\].tw-leading-none.tw-text-white")
-
+# Encuentra los elementos para rutas de imágenes
 imagenes = driver.find_elements(By.CSS_SELECTOR, "img.tw-relative.tw-size-full.tw-rounded-sm")
 
 # Extrae los datos
 data = []
-for nombre, imagen in zip(nombres, imagenes):
-    nombre_texto = nombre.text.strip()  # Obtiene el texto del nombre y elimina espacios innecesarios
+for imagen in imagenes:
     link_imagen = imagen.get_attribute("src")  # Obtiene el atributo src de la imagen
-    data.append({"nombre": nombre_texto, "link-Imagen": link_imagen})
+    if link_imagen:  # Verifica que el enlace no sea None
+        # Extrae la última palabra del enlace eliminando la extensión del archivo
+        nombre_hero = link_imagen.split("/")[-1].replace(".jpg", "").replace("-", " ").title()
+        # Construye el enlace de la página
+        link_pagina = "https://es.dotabuff.com/heroes/" + link_imagen.split("/")[-1].replace(".jpg", "")
+        data.append({"nombre": nombre_hero, "link-Imagen": link_imagen, "link-Pagina": link_pagina})
 
 # Cierra el navegador
 driver.quit()
