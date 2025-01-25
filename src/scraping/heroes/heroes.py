@@ -8,7 +8,7 @@ options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(options=options)
 
 # URL de la página que quieres scrapear
-url = "https://es.dotabuff.com/heroes"  # Reemplaza con la URL real
+url = "https://www.dotabuff.com/heroes"  # Reemplaza con la URL real
 
 # Accede a la página
 driver.get(url)
@@ -25,8 +25,8 @@ for imagen in imagenes:
         # Extrae la última palabra del enlace eliminando la extensión del archivo
         nombre_hero = link_imagen.split("/")[-1].replace(".jpg", "").replace("-", " ").title()
         # Construye el enlace de la página
-        link_pagina = "https://es.dotabuff.com/heroes/" + link_imagen.split("/")[-1].replace(".jpg", "")
-        data.append({"nombre": nombre_hero, "link-Imagen": link_imagen, "link-Pagina": link_pagina})
+        link_pagina = "https://www.dotabuff.com/heroes/" + link_imagen.split("/")[-1].replace(".jpg", "")
+        data.append({"name": nombre_hero, "link-Img": link_imagen, "link-Page": link_pagina})
 
 # Cierra el navegador
 driver.quit()

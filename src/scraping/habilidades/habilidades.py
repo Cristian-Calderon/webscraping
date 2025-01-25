@@ -5,7 +5,7 @@ from selenium.common.exceptions import TimeoutException
 import time
 
 # Leer el archivo CSV
-csv_file = "heroes.csv"  # Nombre del archivo CSV
+csv_file = "../heroes/heroes.csv"  # Nombre del archivo CSV
 data = pd.read_csv(csv_file)
 
 # Configuración del driver (usando Chrome como ejemplo)
@@ -49,7 +49,7 @@ for index, row in data.iterrows():
         popularidad = "No disponible"
         print(f"[ERROR] Error extrayendo popularidad para {link_pagina}: {e}")
 
-    # Extraer win-rate (puede estar en `span.lost` o `span.won`)
+    # Extraer win-rate
     try:
         win_rate = ""
         try:
@@ -62,22 +62,36 @@ for index, row in data.iterrows():
         win_rate = "No disponible"
         print(f"[ERROR] Error extrayendo win-rate para {link_pagina}: {e}")
 
+    # Extraer habilidades
+    habilidades = []
+    try:
+        habilidades_imgs = driver.find_elements(By.CSS_SELECTOR, "img.image-bigicon.image-skill")
+        for img in habilidades_imgs:
+            habilidad_nombre = img.get_attribute("alt")
+            habilidad_img = img.get_attribute("src")
+            habilidades.append({"nombre": habilidad_nombre, "imagen": habilidad_img})
+        print(f"[DEBUG] Habilidades extraídas: {habilidades}")
+    except Exception as e:
+        print(f"[ERROR] Error extrayendo habilidades para {link_pagina}: {e}")
+
     # Guardar los resultados
     resultados.append({
         "nombre": row['nombre'],  # Puedes usar la columna nombre del CSV original
         "link-Pagina": link_pagina,
         "popularidad": popularidad,
-        "win_rate": win_rate
+        "win_rate": win_rate,
+        "habilidades": habilidades
     })
 
-    print(f"[DEBUG] Datos guardados para {row['nombre']}: Popularidad - {popularidad}, Win-rate - {win_rate}")
+    print(f"[DEBUG] Datos guardados para {row['nombre']}: Popularidad - {popularidad}, Win-rate - {win_rate}, Habilidades - {habilidades}")
 
 # Cerrar el navegador
 driver.quit()
 
-# Guardar los nuevos datos en un archivo CSV
-resultados_df = pd.DataFrame(resultados)
-output_file = "heroes_detallados.csv"
-resultados_df.to_csv(output_file, index=False, encoding="utf-8")
+# Guardar los nuevos datos en un archivo JSON (mejor para estructuras complejas como habilidades)
+import json
+output_file = "habilidades.json"
+with open(output_file, "w", encoding="utf-8") as file:
+    json.dump(resultados, file, ensure_ascii=False, indent=4)
 
 print(f"[INFO] Scraping completado. Datos guardados en '{output_file}'.")
