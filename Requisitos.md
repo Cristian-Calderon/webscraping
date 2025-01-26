@@ -101,6 +101,21 @@ pip install -r requirements.txt
 ```
 
 
+## Instalar composer 
+
+Por terminal 
+```bash
+composer init
+```
+
+Requisitos :
+Package name (<vendor>/<name>) cristiancalderon/webscraping
+Description []: Webscraping
+
+## Instalar Twig en componser
+
+composer require twig/twig
+
 4. Implementa el scraping de datos:
 - Crea un script en Python utilizando Selenium para extraer los datos de la web publica.
 - Guardar los datos extraidos en un formato intermedio (CSV o XML)

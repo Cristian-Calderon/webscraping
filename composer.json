@@ -1,8 +1,9 @@
 {
-    "name": "cris/webscraping.local",
+    "name": "cristiancalderon/webscraping",
+    "description": "Webscraping",
     "autoload": {
         "psr-4": {
-            "Cris\\WebscrapingLocal\\": "src/"
+            "Cristiancalderon\\Webscraping\\": "src/"
         }
     },
     "authors": [
@@ -12,8 +13,6 @@
         }
     ],
     "require": {
-        "twig/twig": "^3.16",
-        "firebase/php-jwt": "^6.10",
-        "symfony/routing": "^7.2"
+        "twig/twig": "^3.18"
     }
 }
