@@ -1,0 +1,34 @@
+<?php
+require __DIR__ . '/config.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    // Validar campos vacíos
+    if (empty($username) || empty($email) || empty($password)) {
+        die('Todos los campos son obligatorios.');
+    }
+
+    // Validar formato de email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        die('Correo electrónico no válido.');
+    }
+
+    // Hashear la contraseña
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+    // Insertar en la base de datos
+    $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+    try {
+        $stmt->execute([$username, $email, $hashedPassword]);
+        echo 'Registro exitoso. Ahora puedes iniciar sesión.';
+    } catch (PDOException $e) {
+        // Manejar errores específicos de la base de datos
+        if ($e->getCode() == 23000) {
+            die('El correo electrónico ya está registrado.');
+        }
+        die('Error: ' . $e->getMessage());
+    }
+}
