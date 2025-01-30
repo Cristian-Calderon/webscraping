@@ -4,16 +4,25 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import time
 
-# Leer el archivo CSV
-csv_file = "../heroes/heroes.csv"  # Nombre del archivo CSV
+# Ruta del archivo CSV con los héroes
+csv_file = "../heroes/heroes.csv"
+
+# Cargar el archivo CSV asegurando que los nombres de las columnas sean correctos
 data = pd.read_csv(csv_file)
 
-# Configuración del driver (usando Chrome como ejemplo)
+# Renombrar columnas para evitar problemas
+data.rename(columns={'link-Img': 'link_img', 'link-Page': 'link_page'}, inplace=True)
+
+# Agregar un índice basado en la base de datos (hero_id)
+data['hero_id'] = range(1, len(data) + 1)
+
+# Configuración del driver de Selenium (modo headless para mayor eficiencia)
 options = webdriver.ChromeOptions()
+options.add_argument("--headless")  
 driver = webdriver.Chrome(options=options)
 
 # Ajustar tiempo de espera para evitar timeouts
-driver.set_page_load_timeout(300)  # 300 segundos = 5 minutos
+driver.set_page_load_timeout(300)
 
 # Función para manejar reintentos en caso de fallos al cargar la página
 def acceder_url(driver, url, intentos=3):
@@ -22,26 +31,26 @@ def acceder_url(driver, url, intentos=3):
             print(f"[DEBUG] Intentando acceder a: {url} (Intento {intento + 1})")
             driver.get(url)
             print(f"[DEBUG] Acceso exitoso a: {url}")
-            return True  # Salir si se carga correctamente
+            return True
         except TimeoutException:
             print(f"[DEBUG] Timeout al intentar acceder a: {url} (Intento {intento + 1})")
-            time.sleep(5)  # Esperar antes del siguiente intento
+            time.sleep(5)
     return False
 
-# Crear una lista para almacenar los datos obtenidos de cada página
+# Lista para almacenar los resultados
 resultados = []
 
-# Recorrer cada enlace en la columna 'link-Pagina'
+# Recorrer cada héroe con su ID asignado
 for index, row in data.iterrows():
-    link_pagina = row['link-Pagina']  # Columna que contiene los enlaces
-    print(f"[DEBUG] Procesando el héroe: {row['nombre']} con URL: {link_pagina}")
+    hero_id = row['hero_id']
+    link_pagina = row['link_page']
 
-    # Intentar acceder a la página
+    print(f"[DEBUG] Procesando héroe ID {hero_id} con URL: {link_pagina}")
+
     if not acceder_url(driver, link_pagina):
         print(f"[ERROR] No se pudo cargar la página: {link_pagina}")
         continue
 
-    # Extraer popularidad
     try:
         popularidad = driver.find_element(By.CSS_SELECTOR, "dd").text
         print(f"[DEBUG] Popularidad obtenida: {popularidad}")
@@ -49,7 +58,6 @@ for index, row in data.iterrows():
         popularidad = "No disponible"
         print(f"[ERROR] Error extrayendo popularidad para {link_pagina}: {e}")
 
-    # Extraer win-rate (puede estar en `span.lost` o `span.won`)
     try:
         win_rate = ""
         try:
@@ -62,22 +70,21 @@ for index, row in data.iterrows():
         win_rate = "No disponible"
         print(f"[ERROR] Error extrayendo win-rate para {link_pagina}: {e}")
 
-    # Guardar los resultados
+    # Guardar en la lista con hero_id correcto
     resultados.append({
-        "nombre": row['nombre'],  # Puedes usar la columna nombre del CSV original
-        "link-Pagina": link_pagina,
+        "hero_id": hero_id,
         "popularidad": popularidad,
         "win_rate": win_rate
     })
 
-    print(f"[DEBUG] Datos guardados para {row['nombre']}: Popularidad - {popularidad}, Win-rate - {win_rate}")
+    print(f"[DEBUG] Datos guardados para ID {hero_id}: Popularidad - {popularidad}, Win-rate - {win_rate}")
 
 # Cerrar el navegador
 driver.quit()
 
 # Guardar los nuevos datos en un archivo CSV
 resultados_df = pd.DataFrame(resultados)
-output_file = "perfil-verificar.csv"
+output_file = "heroes_stats.csv"
 resultados_df.to_csv(output_file, index=False, encoding="utf-8")
 
 print(f"[INFO] Scraping completado. Datos guardados en '{output_file}'.")

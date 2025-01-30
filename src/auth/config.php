@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost';
 $db   = 'webscraping';
-$user = 'cristian';
+$user = 'cris';
 $pass = '11011993';
 $charset = 'utf8mb4';
 

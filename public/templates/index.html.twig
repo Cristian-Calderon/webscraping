@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Hola, {{ name }}!</h1>
-    <form action="/src/auth/register.php" method="POST">
+    <form action="../auth/register.php" method="POST">
 
         <label for="username">Usuario:</label>
         <input type="text" id="username" name="username" required>
@@ -20,40 +20,7 @@
         <input type="password" id="password" name="password" required>
         
         <button type="submit" name="register" value="register">Registrarse</button>
-    </form>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Evita que el formulario se envíe de la manera tradicional
-        
-            // Obtener los datos del formulario
-            const formData = new FormData(this);
-        
-            // Enviar los datos usando fetch
-            fetch('/src/auth/register.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la solicitud');
-                }
-                return response.json(); // Asumiendo que el servidor devolverá un JSON
-            })
-            .then(data => {
-                // Aquí manejas la respuesta exitosa
-                console.log('Registro exitoso:', data);
-                alert('Registro exitoso!');
-                // Redirigir o hacer algo más después del registro
-            })
-            .catch(error => {
-                // Aquí manejas errores
-                console.error('Error en la solicitud:', error);
-                alert('Hubo un error al registrar al usuario.');
-            });
-        });
-        </script>
-        
+    </form>    
     
 </body>
 </html>

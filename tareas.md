@@ -1,21 +1,41 @@
-1) Por cada personaje:
+Hacer tablas:
+primero heroes ->
 
-numero unico : 1
-nombre: alchemist
-imagen-link: link
-name-power1: Acid spray
-imagen-link-power1: link
-name-power2: Unstable concoction
-imagen-link-power2: link
-name-power3: Corrisive Weaponry
-imagen-link-power3: link
-name-power4: Greevil's Greed
-imagen-link-power4: link
-name-power5: Chemical Rage
-imagen-link-power5: link
+CREATE TABLE heroes (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+link_img VARCHAR(255) NOT NULL,
+link_page VARCHAR(255) NOT NULL
+);
 
-Lane presence:
-Lane:       Presence    WinRate
-Safe Lane   41.96%      47.61%
-Mid Lane    34.78%      51.32%
-Off Lane    16.76%      46.10%
+Para insertar la base de datos:
+iniciar cesion en mysql:
+mysql --local-infile=1 -u cris -p
+
+dentro de mysql:
+LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/heroes/heroes.csv'
+INTO TABLE heroes
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(name, link_img, link_page);
+
+otra tabla:
+
+CREATE TABLE heroes_stats (
+id INT AUTO_INCREMENT PRIMARY KEY,
+hero_id INT NOT NULL,
+popularidad VARCHAR(10),
+win_rate VARCHAR(10),
+FOREIGN KEY (hero_id) REFERENCES heroes(id)
+);
+
+
+LOAD DATA LOCAL INFILE '/var/www/webscraping.local/src/scraping/perfil/heroes_stats.csv'
+INTO TABLE heroes_stats
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(hero_id, popularidad, win_rate);
