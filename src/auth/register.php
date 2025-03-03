@@ -2,29 +2,21 @@
 require './config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? null;
-    $email = $_POST['email'] ?? null;
-    $password = $_POST['password'] ?? null;
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $username = $_POST['username'];
 
-    // Imprime los valores recibidos para depurar
-    var_dump($username, $email, $password);
+    // Encriptar la contraseña antes de guardarla
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    if (empty($username) || empty($email) || empty($password)) {
-        echo json_encode(['status' => 'error', 'message' => 'Todos los campos son obligatorios.']);
-        exit;
-    }
-
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    // Depuración: Mostrar el hash generado para verificarlo
+    echo "Contraseña encriptada: " . $hashed_password . "<br>";
 
     $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
     try {
-        $stmt->execute([$username, $email, $hashedPassword]);
-        echo json_encode(['status' => 'success', 'message' => 'Usuario registrado correctamente']);
+        $stmt->execute([$username, $email, $hashed_password]);
+        echo 'Registro exitoso.';
     } catch (PDOException $e) {
-        if ($e->getCode() == 23000) {
-            echo json_encode(['status' => 'error', 'message' => 'El correo electrónico ya está registrado.']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
-        }
+        echo 'Error: ' . $e->getMessage();
     }
 }
