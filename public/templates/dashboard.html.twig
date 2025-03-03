@@ -19,7 +19,14 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/home">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/dashboard">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="/logout.php">Cerrar sesión</a></li>
+                    
+                    {% if role == 'admin' %}
+                    <li class="nav-item"><a class="nav-link active" href="/admin">Administrar Usuarios</a></li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white px-3" href="/logout.php">Cerrar sesión</a>
+                    </li>
                 </ul>
             </div>
         </div>
