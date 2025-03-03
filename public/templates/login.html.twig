@@ -76,7 +76,8 @@
             if (data.includes("Error")) {
                 alert("Error: " + data);
             } else {
-                window.location.href = "/dashboard.php";
+                window.location.href = "/dashboard";
+
             }
         })
         .catch(error => console.error("Error:", error));
