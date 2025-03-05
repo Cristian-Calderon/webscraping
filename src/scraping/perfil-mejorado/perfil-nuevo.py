@@ -63,12 +63,22 @@ for index, row in heroes_df.iterrows():
         winrate, won_or_lost = "N/A", "N/A"
     
     try:
-        # Extraer atributos del héroe
-        strength = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//tbody[@class='primary-strength']/tr[2]/td[1]"))
-        ).text
-        agility = driver.find_element(By.XPATH, "//tbody[@class='primary-strength']/tr[2]/td[2]").text
-        intelligence = driver.find_element(By.XPATH, "//tbody[@class='primary-strength']/tr[2]/td[3]").text
+        # Determinar el tipo de héroe y su XPath correspondiente
+        if driver.find_elements(By.XPATH, "//tbody[@class='primary-strength']"):
+            attr_xpath = "//tbody[@class='primary-strength']/tr[2]/td"
+        elif driver.find_elements(By.XPATH, "//tbody[@class='primary-agility']"):
+            attr_xpath = "//tbody[@class='primary-agility']/tr[2]/td"
+        elif driver.find_elements(By.XPATH, "//tbody[@class='primary-intelligence']"):
+            attr_xpath = "//tbody[@class='primary-intelligence']/tr[2]/td"
+        elif driver.find_elements(By.XPATH, "//tbody[@class='primary-all']"):
+            attr_xpath = "//tbody[@class='primary-all']/tr[2]/td"
+        else:
+            raise Exception("No se encontró la tabla de atributos")
+        
+        attributes = driver.find_elements(By.XPATH, attr_xpath)
+        strength = attributes[0].text
+        agility = attributes[1].text
+        intelligence = attributes[2].text
     except:
         print(f"No se encontraron atributos principales para {hero_name}")
         strength, agility, intelligence = "N/A", "N/A", "N/A"
