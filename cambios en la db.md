@@ -6,3 +6,9 @@ Ejecuta esta consulta SQL en tu base de datos para agregar el campo role:
 ALTER TABLE users ADD COLUMN role ENUM('admin', 'user') NOT NULL DEFAULT 'user';
 ```
 
+Para agregar administrador 
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'tucorreo@admin.com';
+```
+
