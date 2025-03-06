@@ -102,3 +102,44 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (id_habilidad, id_heroe, Héroe, Nombre_de_Habilidad, Descripción, Imagen);
+
+
+
+--- objetos
+
+CREATE TABLE objetos (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) UNIQUE NOT NULL,
+    link_pagina TEXT
+);
+
+CREATE TABLE objetos_descripcion (
+    id_objeto INT AUTO_INCREMENT PRIMARY KEY,
+    id_item INT NOT NULL,
+    imagen TEXT,
+    costo INT,
+    descripcion TEXT,
+    FOREIGN KEY (id_item) REFERENCES objetos(id_item) ON DELETE CASCADE
+);
+
+
+-- insert objetos.csv
+LOAD DATA LOCAL INFILE '/ruta/donde/esta/objetos.csv'
+INTO TABLE objetos
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(id_item, nombre, link_pagina);
+
+
+
+-- insert objetos_descripcion.csv
+
+LOAD DATA LOCAL INFILE '/ruta/donde/esta/objetos-description.csv'
+INTO TABLE objetos_descripcion
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(id_item, nombre, imagen, costo, descripcion);
