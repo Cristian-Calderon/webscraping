@@ -1,97 +1,68 @@
-import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 import time
 
-# Leer el archivo CSV
-csv_file = "../heroes/heroes.csv"  # Nombre del archivo CSV
-data = pd.read_csv(csv_file)
+# Cargar el CSV
+file_path = "../heroes/heroes-spanish.csv"
+heroes_df = pd.read_csv(file_path)
 
-# Configuración del driver (usando Chrome como ejemplo)
+# Configurar Selenium
 options = webdriver.ChromeOptions()
-driver = webdriver.Chrome(options=options)
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+driver.set_page_load_timeout(30)  # Aumentar el tiempo de espera para cargar la página
+driver.maximize_window()  # Abrir el navegador en pantalla completa
 
-# Ajustar tiempo de espera para evitar timeouts
-driver.set_page_load_timeout(300)  # 300 segundos = 5 minutos
+# Lista para almacenar los datos extraídos
+data = []
+id_habilidad = 1  # Contador de ID de habilidad
 
-# Función para manejar reintentos en caso de fallos al cargar la página
-def acceder_url(driver, url, intentos=3):
-    for intento in range(intentos):
-        try:
-            print(f"[DEBUG] Intentando acceder a: {url} (Intento {intento + 1})")
-            driver.get(url)
-            print(f"[DEBUG] Acceso exitoso a: {url}")
-            return True  # Salir si se carga correctamente
-        except TimeoutException:
-            print(f"[DEBUG] Timeout al intentar acceder a: {url} (Intento {intento + 1})")
-            time.sleep(5)  # Esperar antes del siguiente intento
-    return False
-
-# Crear una lista para almacenar los datos obtenidos de cada página
-resultados = []
-
-# Recorrer cada enlace en la columna 'link-Pagina'
-for index, row in data.iterrows():
-    link_pagina = row['link-Pagina']  # Columna que contiene los enlaces
-    print(f"[DEBUG] Procesando el héroe: {row['nombre']} con URL: {link_pagina}")
-
-    # Intentar acceder a la página
-    if not acceder_url(driver, link_pagina):
-        print(f"[ERROR] No se pudo cargar la página: {link_pagina}")
-        continue
-
-    # Extraer popularidad
+# Recorrer todos los héroes
+for hero_id, row in heroes_df.iterrows():
+    hero_name = row['nombre']
+    abilities_url = row['link-Pagina'] + "/abilities"
+    
+    print(f"Scrapeando habilidades de {hero_name}...")
+    
     try:
-        popularidad = driver.find_element(By.CSS_SELECTOR, "dd").text
-        print(f"[DEBUG] Popularidad obtenida: {popularidad}")
-    except Exception as e:
-        popularidad = "No disponible"
-        print(f"[ERROR] Error extrayendo popularidad para {link_pagina}: {e}")
+        driver.get(abilities_url)
+        time.sleep(3)  # Esperar para cargar la página
+        
+        abilities = driver.find_elements(By.XPATH, "//div[@class='skill-tooltip reborn-tooltip']")
+        
+        for ability in abilities:
+            try:
+                ability_name = ability.find_element(By.XPATH, ".//div[@class='bigavatar']//img").get_attribute("alt")
+                ability_description = ability.find_element(By.XPATH, ".//div[@class='description']/p").text
+                ability_image = ability.find_element(By.XPATH, ".//div[@class='bigavatar']//img").get_attribute("src")
+                
+                # Guardar los datos extraídos con ID de habilidad
+                data.append({
+                    "id_habilidad": id_habilidad,
+                    "id_heroe": hero_id + 1,  # Asegurar que el ID de héroe empiece en 1
+                    "Héroe": hero_name,
+                    "Nombre de Habilidad": ability_name,
+                    "Descripción": ability_description,
+                    "Imagen": ability_image
+                })
+                id_habilidad += 1  # Incrementar el ID de habilidad
+                
+            except:
+                print(f"Error al extraer una habilidad para {hero_name}")
+        
+    except:
+        print(f"No se pudieron extraer las habilidades para {hero_name}")
+    
+# Guardar los datos en un nuevo CSV
+output_df = pd.DataFrame(data)
+output_path = "./dota_heroes_abilities.csv"
+output_df.to_csv(output_path, index=False)
 
-    # Extraer win-rate
-    try:
-        win_rate = ""
-        try:
-            win_rate = driver.find_element(By.CSS_SELECTOR, "span.won").text
-            print(f"[DEBUG] Win-rate obtenido (won): {win_rate}")
-        except:
-            win_rate = driver.find_element(By.CSS_SELECTOR, "span.lost").text
-            print(f"[DEBUG] Win-rate obtenido (lost): {win_rate}")
-    except Exception as e:
-        win_rate = "No disponible"
-        print(f"[ERROR] Error extrayendo win-rate para {link_pagina}: {e}")
-
-    # Extraer habilidades
-    habilidades = []
-    try:
-        habilidades_imgs = driver.find_elements(By.CSS_SELECTOR, "img.image-bigicon.image-skill")
-        for img in habilidades_imgs:
-            habilidad_nombre = img.get_attribute("alt")
-            habilidad_img = img.get_attribute("src")
-            habilidades.append({"nombre": habilidad_nombre, "imagen": habilidad_img})
-        print(f"[DEBUG] Habilidades extraídas: {habilidades}")
-    except Exception as e:
-        print(f"[ERROR] Error extrayendo habilidades para {link_pagina}: {e}")
-
-    # Guardar los resultados
-    resultados.append({
-        "nombre": row['nombre'],  # Puedes usar la columna nombre del CSV original
-        "link-Pagina": link_pagina,
-        "popularidad": popularidad,
-        "win_rate": win_rate,
-        "habilidades": habilidades
-    })
-
-    print(f"[DEBUG] Datos guardados para {row['nombre']}: Popularidad - {popularidad}, Win-rate - {win_rate}, Habilidades - {habilidades}")
-
-# Cerrar el navegador
 driver.quit()
-
-# Guardar los nuevos datos en un archivo JSON (mejor para estructuras complejas como habilidades)
-import json
-output_file = "habilidades.json"
-with open(output_file, "w", encoding="utf-8") as file:
-    json.dump(resultados, file, ensure_ascii=False, indent=4)
-
-print(f"[INFO] Scraping completado. Datos guardados en '{output_file}'.")
+print(f"Datos guardados en {output_path}")

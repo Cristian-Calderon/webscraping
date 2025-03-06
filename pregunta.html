@@ -1,145 +1,108 @@
-por ejemplo necesito la popularidad que en este caso es 60th y el porcentaje de victoria 50.38% tambien vi casos en
-porcentaje de victoria que es menos d 50% entonces usa una clase llamada lost, estos serian los dos primero datos que
-necesito.
+ahora necesito otra csv que se llame objetos-description que use como parametro el csv que acabamos de crear el
+dota_items.csv de este necesitamos el tercer parametro:
+id_item,Nombre,Link
+1,Aghanim's Shard,https://es.dotabuff.com/items/aghanims-shard
+2,Aghanim's Scepter,https://es.dotabuff.com/items/aghanims-scepter
 
-<div class="header-content-secondary">
-    <dl>
-        <dd>60th</dd>
-        <dt>Popularidad</dt>
-    </dl>
-    <dl>
-        <dd><span class="won">50.38%</span></dd>
-        <dt>Porcentaje de victoria</dt>
-    </dl>
-    <div class="hero-secondary-ability-icons r-none-mobile">
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/abilities"><img alt="Acid Spray" class="image-bigicon image-skill"
-                    rel="tooltip-remote" data-tooltip-url="/skills/alchemist-acid-spray-5365/tooltip"
-                    src="/assets/skills/alchemist-acid-spray-5365-81d6b3d51a26dbd3d33d3841414067719e5631eb7a02236607cacd8776324967.jpg"
-                    data-hasqtip="19" oldtitle="Acid Spray" title=""></a></div>
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/abilities"><img alt="Unstable Concoction" class="image-bigicon image-skill"
-                    rel="tooltip-remote" data-tooltip-url="/skills/alchemist-unstable-concoction-5366/tooltip"
-                    src="/assets/skills/alchemist-unstable-concoction-5366-81b1e5d67704538ae35269df43a631030d8085cde61862b166d1fb383147f468.jpg"
-                    data-hasqtip="20" oldtitle="Unstable Concoction" title=""></a></div>
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/abilities"><img alt="Corrosive Weaponry" class="image-bigicon image-skill"
-                    rel="tooltip-remote" data-tooltip-url="/skills/alchemist-corrosive-weaponry-1116/tooltip"
-                    src="/assets/skills/alchemist-corrosive-weaponry-1116-3c81b60a8530283e3a4925553f20a4337bc75887af174d795f31d4c24e7c2d75.jpg"
-                    data-hasqtip="21" oldtitle="Corrosive Weaponry" title=""></a></div>
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/abilities"><img alt="Greevil's Greed" class="image-bigicon image-skill"
-                    rel="tooltip-remote" data-tooltip-url="/skills/alchemist-greevils-greed-1333/tooltip"
-                    src="/assets/skills/alchemist-greevils-greed-1333-5732fca37fe37b82177a8be9890337e3267e0afc99375e199c900815606cefac.jpg"
-                    data-hasqtip="22" oldtitle="Greevil's Greed" title="" aria-describedby="ui-tooltip-22"></a></div>
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/abilities"><img alt="Chemical Rage" class="image-bigicon image-skill"
-                    rel="tooltip-remote" data-tooltip-url="/skills/alchemist-chemical-rage-5369/tooltip"
-                    src="/assets/skills/alchemist-chemical-rage-5369-b743b415e5d40987b57ec8e8335e8f0cd55c93b8c260a87fe4832527ac636ec4.jpg"
-                    data-hasqtip="23" oldtitle="Chemical Rage" title=""></a></div>
-        <div class="image-container image-container-bigicon image-container-skill"><a
-                href="/heroes/alchemist/skills"><img class="image-bigicon image-skill" rel="neighbour-tooltip"
-                    src="/assets/skills/talent-de0d898bbc5c6c396ea86790547d4024a0e9093bc8bd242c1fb175140e9e6000.jpg"
-                    data-hasqtip="9">
-                <div style="display: none">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="cell-centered" colspan="3">Árbol de talentos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="talent-cell">+50 de regeneración de vida para Furia&nbsp;Química</td>
-                                <td class="talent-level">
-                                    <div>25</div>
-                                </td>
-                                <td class="talent-cell">+50 de velocidad de mov. para Furia&nbsp;Química</td>
-                            </tr>
-                            <tr>
-                                <td class="talent-cell">+400 de daño máximo para Mezcla Inestable</td>
-                                <td class="talent-level">
-                                    <div>20</div>
-                                </td>
-                                <td class="talent-cell">-0.1&nbsp;s de tiempo de ataque base para Furia&nbsp;Química
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="talent-cell">+2 de daño por acumulación de Avaricia de Greevil</td>
-                                <td class="talent-level">
-                                    <div>15</div>
-                                </td>
-                                <td class="talent-cell">Ácido Pulverizado otorga armadura a los aliados</td>
-                            </tr>
-                            <tr>
-                                <td class="talent-cell">+125&nbsp;de radio para Mezcla Inestable</td>
-                                <td class="talent-level">
-                                    <div>10</div>
-                                </td>
-                                <td class="talent-cell">+1 de reducción de armadura para Ácido Pulverizado</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </a></div>
+El link recorremos todos los objetos y entraremos a cada pagina del item tenemos que guardar lo siguiente:
+id_item, nombre, costo, descripcion hay objetos que no tiene costo porque son objetos neutrales. tambien existen objetos
+que no tiene descripcion esos por favor no los guardes. ahora te paso las etiquetas que necesitas:
+
+por ejemplo de este primer item podemos guardar:
+
+el nombre: Aghanim's Shard, img que seria un link, tiene un costo de gold= 1400, y tiene una descripcion: With origins
+known only to a single wizard, fragments of this impossible crystal are nearly as
+coveted as the renowned scepter itself.
+<div class="embedded-tooltip">
+    <div class="item-tooltip reborn-tooltip">
+        <div class="tooltip-header">
+            <div class="avatar">
+                <div class="image-container image-container-avatar image-container-item"><a
+                        href="/items/aghanims-shard"><img alt="Aghanim's Shard" class="image-avatar image-item"
+                            rel="tooltip-remote" data-tooltip-url="/items/aghanims-shard/tooltip"
+                            src="/assets/items/aghanims-shard-4e79e040a49fe45c7aa7aeb2b0776c06488564bc5cd33e742960153363910526.jpg"
+                            data-hasqtip="127" oldtitle="Aghanim's Shard" title=""></a></div>
+            </div>
+            <div class="name">Aghanim's Shard</div>
+            <div class="shop-icons"><img
+                    src="/assets/shop_main-66f7c3d4659240906fadbfca4542f4c360e9ef4d020d9eb0f946c9eb1179787a.png"></div>
+            <div class="price"><span class="gold-icon"><img
+                        src="/assets/gold-icon-reborn-6a472fefb1599cf8acc751abc05070aff6e88a6e1008d9c2fdd2f1cb44591412.png"></span><span
+                    class="value"><span class="number">1400</span></span></div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="description">
+            <div class="description-block passive">
+                <div class="description-block-header">Passive: Ability Upgrade</div>Upgrades an existing ability or adds
+                a new ability to your hero.
+            </div>
+        </div>
+        <div class="lore">With origins known only to a single wizard, fragments of this impossible crystal are nearly as
+            coveted as the renowned scepter itself.</div>
+        <div class="shop">
+            <div class="shop-icons"><img
+                    src="/assets/shop_main-66f7c3d4659240906fadbfca4542f4c360e9ef4d020d9eb0f946c9eb1179787a.png"></div>
+            Disponible en la tienda local
+        </div>
     </div>
 </div>
 
-Luego necesitaria fuerza 23 +2.7, agilidad 22 +1.5, inteligencia 25 +1.8, velocidad de movimiento 295, rango de visión
-1800/800, armadura 3.08, tiempo de ataque base 1.7, daño 50 - 56, punto de ataque 0.35. te paso las etiqueta completas para que me ayudes a poder hacer el webscraping.
+ahora te pasare otro de objeto neutral:
+por ejemplo este no tiene costo es un objeto neutral pero si tiene descripcion: Activate to redeem...
+<div class="embedded-tooltip">
+    <div class="item-tooltip reborn-tooltip">
+        <div class="tooltip-header">
+            <div class="avatar">
+                <div class="image-container image-container-avatar image-container-item"><a
+                        href="/items/tier-5-token"><img alt="Tier 5 Token" class="image-avatar image-item"
+                            rel="tooltip-remote" data-tooltip-url="/items/tier-5-token/tooltip"
+                            src="/assets/items/tier-5-token-24de71f3ff5ae262e48f0bd91f0d5d7bd3c53f3f21647c63100786a5b46286d6.jpg"
+                            data-hasqtip="1" oldtitle="Tier 5 Token" title=""></a></div>
+            </div>
+            <div class="name">Tier 5 Token</div>
+            <div class="price"><span>Neutral Item</span></div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="description">
+            <div class="description-block ">Activate to redeem a Tier <span class="number">5</span> Neutral Item. The
+                resulting neutral item isn't shareable and a hero can only redeem a single token per tier.</div>
+        </div>
+    </div>
+</div>
 
-<section class="hero_attributes">
-    <header>Atributos del Héroe<small>
-            <div class="more"><a href="/heroes/alchemist/abilities"><i class="fa fa-plus-square"></i> más</a></div>
-        </small></header>
-    <article>
-        <table class="main">
-            <tbody class="primary-strength">
-                <tr>
-                    <td class="str"><img alt="Fuerza"
-                            src="/assets/hero_str-c4c83daf6344eee5758e6634a6535394cdcf03a9a8292076260cbe42b76d1b4c.png">
-                    </td>
-                    <td class="agi"><img alt="Agilidad"
-                            src="/assets/hero_agi-f7c48b4a53d1a3f879d97d7afce7326b01d4a1a053fec8ea922ac6bbbe7947d7.png">
-                    </td>
-                    <td class="int"><img alt="Inteligencia"
-                            src="/assets/hero_int-b590a71ef3df24fd995abacac069e7dbf3ee126cc67d6969bb3bea8034124232.png">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="str">23 +2.7</td>
-                    <td class="agi">22 +1.5</td>
-                    <td class="int">25 +1.8</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="other">
-            <tbody>
-                <tr>
-                    <td>Velocidad de movimiento</td>
-                    <td>295</td>
-                </tr>
-                <tr>
-                    <td>Rango de visión</td>
-                    <td>1800/800</td>
-                </tr>
-                <tr>
-                    <td>Armadura</td>
-                    <td>3.08</td>
-                </tr>
-                <tr>
-                    <td>Tiempo de Ataque Base</td>
-                    <td>1.7</td>
-                </tr>
-                <tr>
-                    <td>Daño</td>
-                    <td>50 - 56</td>
-                </tr>
-                <tr>
-                    <td>Punto de ataque</td>
-                    <td>0.35</td>
-                </tr>
-            </tbody>
-        </table>
-    </article>
-</section>
+Hay otros objetos que no tiene descripcion en esos casos por favor ignorar y no guardarlos.
+como este ejemplo:
+<div class="embedded-tooltip">
+    <div class="item-tooltip reborn-tooltip">
+        <div class="tooltip-header">
+            <div class="avatar">
+                <div class="image-container image-container-avatar image-container-item"><a
+                        href="/items/fleetfooted"><img alt="Fleetfooted" class="image-avatar image-item"
+                            rel="tooltip-remote" data-tooltip-url="/items/fleetfooted/tooltip"
+                            src="/assets/items/fleetfooted-0598a6330f0cf6ece0a38fde45a96507b3fec7c4cc1dd2ea0c8a8490cfb3c33d.jpg"
+                            data-hasqtip="127" oldtitle="Fleetfooted" title=""></a></div>
+            </div>
+            <div class="name">Fleetfooted</div>
+            <div class="price"><span>Neutral Item</span></div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="description"></div>
+        <div class="notes">
+            <p>Does not stack with Movement Speed bonuses from boots</p>
+        </div>
+    </div>
+</div>
+
+--otra pregunta.
+
+igual quiero consultarte sobre otro csv que tengo que quisiera que me ayudes con la logica es de los objetos, de igual
+manera ya tengo los csv solo quiero mostrarte como estan estructurados. tengo uno que se llama objetos que guarda el id
+el nombre y el link de cada pagina.
+
+objetos.csv
+id_item,Nombre,Link
+1,Aghanim's Shard,https://es.dotabuff.com/items/aghanims-shard
+
+objetos-description
+y la otra tabla es:
+id_item, nombre, costo, descripcion
