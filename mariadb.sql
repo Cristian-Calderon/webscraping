@@ -124,3 +124,38 @@ SELECT h.nombre
 FROM heroes h
 LEFT JOIN habilidades hb ON h.id_heroe = hb.id_heroe
 WHERE hb.id_habilidad IS NULL;
+
+
+-- Probar Objetos para insertarlos
+
+CREATE TABLE objetos (
+    id_item INT PRIMARY KEY,
+    Nombre VARCHAR(255),
+    Link VARCHAR(500)
+);
+drop table if exists objetos_descripcion;
+CREATE TABLE objetos_descripcion (
+    id_item INT PRIMARY KEY,
+    Nombre VARCHAR(255),
+    Imagen VARCHAR(500),
+    Costo VARCHAR(255),
+    Descripcion TEXT,
+    FOREIGN KEY (id_item) REFERENCES objetos(id_item) ON DELETE CASCADE
+);
+
+LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/objetos/dota_items.csv'
+INTO TABLE objetos
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/objetos-description/item_cleaned_for_mysql.csv'
+INTO TABLE objetos_descripcion
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+
+
