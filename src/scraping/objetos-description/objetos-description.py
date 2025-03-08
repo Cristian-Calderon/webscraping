@@ -48,10 +48,10 @@ for index, row in items_df.iterrows():
         except:
             item_cost = "Neutral Item"  # Si no tiene costo, es un objeto neutral
         
-        # Extraer descripción del ítem (si existe, dejar vacío si no la tiene)
+        # Extraer descripción del ítem (sin saltos de línea)
         try:
             description_blocks = driver.find_elements(By.XPATH, "//div[@class='description']//div | //div[@class='description-block']")
-            item_description = " ".join([block.text for block in description_blocks if block.text.strip()])
+            item_description = " ".join([block.text.replace("\n", " ") for block in description_blocks if block.text.strip()])
         except:
             item_description = ""
         
@@ -59,7 +59,7 @@ for index, row in items_df.iterrows():
         try:
             if not item_description:
                 cooldown_blocks = driver.find_elements(By.XPATH, "//div[@class='cooldown-and-cost']//div")
-                item_description = " ".join([block.text for block in cooldown_blocks if block.text.strip()])
+                item_description = " ".join([block.text.replace("\n", " ") for block in cooldown_blocks if block.text.strip()])
         except:
             pass
         
@@ -67,7 +67,7 @@ for index, row in items_df.iterrows():
         try:
             if not item_description:
                 header_blocks = driver.find_elements(By.XPATH, "//div[@class='description']//h1 | //div[@class='description']//div[@class='description-block-header']")
-                item_description = " ".join([block.text for block in header_blocks if block.text.strip()])
+                item_description = " ".join([block.text.replace("\n", " ") for block in header_blocks if block.text.strip()])
         except:
             pass
         
