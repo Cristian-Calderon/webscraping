@@ -130,7 +130,7 @@ SET Heroe = TRIM(Heroe);
 INSERT INTO habilidades (id_habilidad, id_heroe, nombre_habilidad, descripcion, imagen)
 SELECT id_habilidad, id_heroe, nombre_habilidad, descripcion, imagen
 FROM habilidades_temp;
-
+sss
 
 --📌 📌 7. Eliminar la Tabla Temporal
 DROP TEMPORARY TABLE habilidades_temp;
