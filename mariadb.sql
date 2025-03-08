@@ -8,6 +8,14 @@ CREATE TABLE heroes (
 );
 
 -- Para cargar los datos de tabla heroes.csv:
+--portatil
+LOAD DATA INFILE '/var/lib/mysql-files/heroes-spanish.csv'
+INTO TABLE heroes
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(nombre, link_img, link_page);
+
 LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/heroes/heroes-spanish.csv'
 INTO TABLE heroes
 FIELDS TERMINATED BY ','
@@ -36,6 +44,16 @@ CREATE TABLE perfil_heroes (
     punto_ataque VARCHAR(50),
     FOREIGN KEY (id_heroe) REFERENCES heroes(id_heroe) ON DELETE CASCADE
 );
+
+--portatil
+LOAD DATA INFILE '/var/lib/mysql-files/dota_heroes_data.csv'
+INTO TABLE perfil_heroes
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(@heroe, popularidad, porcentaje_victoria, resultado, fuerza, agilidad, inteligencia, velocidad_movimiento, rango_vision, armadura, tiempo_ataque_base, damage, punto_ataque)
+SET id_heroe = (SELECT id_heroe FROM heroes WHERE nombre = @heroe);
+
 -- Para cargar los datos de tabla perfil_heroes.csv
 LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/perfil-mejorado/dota_heroes_data.csv'
 INTO TABLE perfil_heroes
@@ -57,6 +75,15 @@ CREATE TABLE habilidades (
     FOREIGN KEY (id_heroe) REFERENCES heroes(id_heroe) ON DELETE CASCADE
 );
 
+--portatil
+LOAD DATA INFILE '/var/lib/mysql-files/dota_heroes_abilities_o.csv'
+INTO TABLE habilidades
+FIELDS TERMINATED BY ',' ENCLOSED BY '"' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(@id_habilidad, @id_heroe, @heroe, nombre_habilidad, descripcion, imagen)
+SET id_heroe = (SELECT id_heroe FROM heroes WHERE nombre = @heroe);
+
 -- Para cargar los datos de tabla dota_heroes_abilities_o.csv
 LOAD DATA INFILE '/var/www/webscraping.local/src/scraping/habilidades/dota_heroes_abilities_o.csv'
 INTO TABLE habilidades
@@ -66,3 +93,34 @@ IGNORE 1 ROWS
 (@id_habilidad, @id_heroe, @heroe, nombre_habilidad, descripcion, imagen)
 SET id_heroe = (SELECT id_heroe FROM heroes WHERE nombre = @heroe);
 
+-- Probar si los datos relacionados funcionan:
+SELECT * FROM heroes LIMIT 10;
+
+SELECT h.nombre, p.popularidad, p.porcentaje_victoria, p.resultado 
+FROM perfil_heroes p
+JOIN heroes h ON p.id_heroe = h.id_heroe
+LIMIT 10;
+
+
+SELECT h.nombre, hb.nombre_habilidad, hb.descripcion, hb.imagen 
+FROM habilidades hb
+JOIN heroes h ON hb.id_heroe = h.id_heroe
+WHERE h.nombre = 'Alchemist';
+
+
+SELECT h.nombre, COUNT(hb.id_habilidad) AS total_habilidades
+FROM heroes h
+LEFT JOIN habilidades hb ON h.id_heroe = hb.id_heroe
+GROUP BY h.id_heroe
+ORDER BY total_habilidades DESC;
+
+SELECT h.nombre, p.popularidad, p.porcentaje_victoria, p.resultado, hb.nombre_habilidad, hb.descripcion
+FROM heroes h
+LEFT JOIN perfil_heroes p ON h.id_heroe = p.id_heroe
+LEFT JOIN habilidades hb ON h.id_heroe = hb.id_heroe
+WHERE h.nombre = 'Axe';
+
+SELECT h.nombre
+FROM heroes h
+LEFT JOIN habilidades hb ON h.id_heroe = hb.id_heroe
+WHERE hb.id_habilidad IS NULL;
