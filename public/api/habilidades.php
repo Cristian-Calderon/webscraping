@@ -1,66 +1,44 @@
 <?php
-require '../auth/config.php';
-require '../../vendor/autoload.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
-// Verificar autenticación
-$token = $_COOKIE['auth_token'] ?? null;
-if (!$token) {
-    die(json_encode(["error" => "No autorizado."]));
-}
-
-try {
-    $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
-    $user_id = $decoded->sub;
-} catch (Exception $e) {
-    die(json_encode(["error" => "Token inválido."]));
-}
+header("Content-Type: application/json");
+require_once __DIR__ . '/../src/auth/config.php';
+require_once __DIR__ . '/../src/auth/verify_token.php';
 
 // Conectar a la base de datos
-$pdo = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (PDOException $e) {
+    echo json_encode(["error" => "Error de conexión a la base de datos", "message" => $e->getMessage()]);
+    exit;
+}
 
-$method = $_SERVER['REQUEST_METHOD'];
+// Verificar si se proporciona un ID de héroe
+if (!isset($_GET['id_heroe'])) {
+    echo json_encode(["error" => "ID de héroe requerido"]);
+    exit;
+}
 
-if ($method === 'GET') {
-    // Obtener habilidades
-    $stmt = $pdo->query("SELECT * FROM habilidades");
-    $habilidades = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$id_heroe = (int) $_GET['id_heroe']; // Convertir a número para mayor seguridad
+
+// Verificar que el héroe exista
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM heroes WHERE id_heroe = ?");
+$stmt->execute([$id_heroe]);
+if ($stmt->fetchColumn() == 0) {
+    echo json_encode(["error" => "Héroe no encontrado"]);
+    exit;
+}
+
+// Obtener habilidades del héroe
+$stmt = $pdo->prepare("SELECT * FROM habilidades WHERE id_heroe = ?");
+$stmt->execute([$id_heroe]);
+$habilidades = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Verificar si hay habilidades
+if ($habilidades) {
     echo json_encode($habilidades);
-} elseif ($method === 'POST') {
-    // Agregar una nueva habilidad
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!isset($data['nombre'])) {
-        die(json_encode(["error" => "Nombre requerido"]));
-    }
-    
-    $stmt = $pdo->prepare("INSERT INTO habilidades (nombre) VALUES (?)");
-    $stmt->execute([$data['nombre']]);
-    echo json_encode(["success" => "Habilidad agregada"]);
-} elseif ($method === 'PUT') {
-    // Actualizar habilidad
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!isset($data['id']) || !isset($data['nombre'])) {
-        die(json_encode(["error" => "ID y Nombre requeridos"]));
-    }
-
-    $stmt = $pdo->prepare("UPDATE habilidades SET nombre = ? WHERE id = ?");
-    $stmt->execute([$data['nombre'], $data['id']]);
-    echo json_encode(["success" => "Habilidad actualizada"]);
-} elseif ($method === 'DELETE') {
-    // Eliminar habilidad
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!isset($data['id'])) {
-        die(json_encode(["error" => "ID requerido"]));
-    }
-
-    $stmt = $pdo->prepare("DELETE FROM habilidades WHERE id = ?");
-    $stmt->execute([$data['id']]);
-    echo json_encode(["success" => "Habilidad eliminada"]);
 } else {
-    http_response_code(405);
-    echo json_encode(["error" => "Método no permitido"]);
+    echo json_encode(["error" => "No se encontraron habilidades para este héroe"]);
 }
 ?>

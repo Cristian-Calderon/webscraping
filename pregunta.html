@@ -1,159 +1,56 @@
-📌 Modifica index.php y asegúrate de que $token siempre tenga un valor antes de decodificarlo.
+hmm osea estas creando un api para solo mostrar ?? informacion de heroes? y habilidades y perfil_heroes?? pero tengo muchas otras tablas no seria mejor crear solo uno con todas las tablas porque estan relacionadas y incluso tienen una foreign key te voy a pasar las estructura de mis base de datos: 
 
-Antes (línea 120, donde da el error):
+como puedes ver heroes, perfil_heroes y habilidades tiene relacion. Tambien tengo otras 2 tablas objetos y objetos descripcion que tambien estan relacionadas como podriamos hacer una api de esto.
 
-php
-Copy
-Edit
-$token = $_COOKIE['auth_token'];
-🔹 Cambia por esta versión con validación de existencia:
+Tambien necesito que se pueda editar crear y eliminar heroes y tambien crear editar y eliminar objetos pensandolo mejor como podria despues de por ejemplo si creo un heroe este heroe tiene otros datos de perfil_heroes y habilidades eso tambien se deberia poder agregar al heroe y tambien editar y tambien eliminar verdad??? o como funciona eso?
 
-php
-Copy
-Edit
-$token = $_COOKIE['auth_token'] ?? null;
+CREATE TABLE heroes (
+    id_heroe INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) UNIQUE NOT NULL,
+    link_img TEXT,
+    link_page TEXT
+);
 
-if (!$token) {
-    debug_log("❌ No se encontró el token en la cookie.");
-    header('Location: /login');
-    exit();
-}
-✅ Esto asegura que JWT::decode() solo se ejecutará si el token realmente existe.
+CREATE TABLE perfil_heroes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_heroe INT,
+    popularidad VARCHAR(50),
+    porcentaje_victoria VARCHAR(50),
+    resultado ENUM('won', 'lost'),
+    fuerza VARCHAR(50),
+    agilidad VARCHAR(50),
+    inteligencia VARCHAR(50),
+    velocidad_movimiento VARCHAR(50),
+    rango_vision VARCHAR(50),
+    armadura VARCHAR(50),
+    tiempo_ataque_base VARCHAR(50),
+    damage VARCHAR(50),
+    punto_ataque VARCHAR(50),
+    FOREIGN KEY (id_heroe) REFERENCES heroes(id_heroe) ON DELETE CASCADE
+);
 
-Como hago estos cambios en mi index.php manteniendo la logica que ya tiene: 
 
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+CREATE TABLE habilidades (
+    id_habilidad INT AUTO_INCREMENT PRIMARY KEY,
+    id_heroe INT,
+    nombre_habilidad VARCHAR(255),
+    descripcion TEXT,
+    imagen TEXT,
+    FOREIGN KEY (id_heroe) REFERENCES heroes(id_heroe) ON DELETE CASCADE
+);
 
-require __DIR__ . '/auth/config.php';
-require __DIR__ . '/../vendor/autoload.php';
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+CREATE TABLE objetos (
+    id_item INT PRIMARY KEY,
+    Nombre VARCHAR(255),
+    Link VARCHAR(500)
+);
 
-// Configurar Twig con la carpeta de templates
-$templatesPath = realpath(__DIR__ . '/templates');
-if (!$templatesPath || !is_dir($templatesPath)) {
-    die("Error: La carpeta templates NO EXISTE en " . __DIR__ . '/templates');
-}
-
-$loader = new \Twig\Loader\FilesystemLoader($templatesPath);
-$twig = new \Twig\Environment($loader, [
-    //'cache' => __DIR__ . '/../cache',
-]);
-
-// Obtener la ruta actual desde $_GET['route']
-$request_uri = $_GET['route'] ?? 'home'; // Si no hay ruta, se carga "home"
-
-// Mapeo de rutas a sus respectivos archivos Twig
-$routes = [
-    'home' => 'home.html.twig',
-    'register' => 'register.html.twig',
-    'login' => 'login.html.twig',
-    'dashboard' => 'dashboard.html.twig',
-    'admin' => 'admin.html.twig',
-    'heroes' => 'heroes.html.twig'
-];
-
-// 🔹 Si la ruta es "admin/delete/{id}", procesar la eliminación
-if (preg_match('/^admin\/delete\/(\d+)$/', $request_uri, $matches)) {
-    if (!isset($_COOKIE['auth_token'])) {
-        die("❌ No autorizado.");
-    }
-    
-    $token = $_COOKIE['auth_token'];
-    try {
-        $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
-        $user_id = $decoded->sub;
-        
-        $stmt = $pdo->prepare('SELECT role FROM users WHERE id = ?');
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-        
-        if (!$user || $user['role'] !== 'admin') {
-            die("❌ No tienes permisos para eliminar usuarios.");
-        }
-        
-        $delete_id = $matches[1];
-        
-        if ($delete_id == $user_id) {
-            die("❌ No puedes eliminar tu propia cuenta.");
-        }
-        
-        $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
-        $stmt->execute([$delete_id]);
-        
-        header('Location: /admin');
-        exit();
-    } catch (Exception $e) {
-        die("❌ Token inválido.");
-    }
-}
-
-debug_log("Cookies actuales: " . print_r($_COOKIE, true));
-
-// 🔹 Validación de autenticación para rutas protegidas
-if (in_array($request_uri, ['dashboard', 'admin', 'heroes'])) {
-    if (!isset($_COOKIE['auth_token']) || empty($_COOKIE['auth_token'])) {
-        debug_log("Redirigiendo a login: Token no presente. Cookies actuales: " . print_r($_COOKIE, true));
-        header('Location: /login');
-        exit();
-    }
-    
-    $token = $_COOKIE['auth_token'];
-    try {
-        $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
-        $user_id = $decoded->sub;
-        
-        $stmt = $pdo->prepare('SELECT username, email, role FROM users WHERE id = ?');
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-        
-        if (!$user) {
-            die("❌ Error: Usuario no encontrado.");
-        }
-        
-        if ($request_uri === 'admin' && $user['role'] !== 'admin') {
-            die("❌ Acceso denegado. Solo administradores pueden acceder.");
-        }
-        
-        echo $twig->render($routes[$request_uri], [
-            'username' => $user['username'],
-            'email' => $user['email'],
-            'user_id' => $user_id,
-            'role' => $user['role']
-        ]);
-        exit();
-    } catch (Exception $e) {
-        header('Location: /login');
-        exit();
-    }
-}
-
-// 🔹 Renderizar la página si la ruta existe
-if (array_key_exists($request_uri, $routes)) {
-    echo $twig->render($routes[$request_uri]);
-} else {
-    http_response_code(404);
-    die("❌ Error: La ruta '" . htmlspecialchars($request_uri) . "' no existe en el sistema.");
-}
-
-// 🔹 Manejo de decodificación del token con mejoras
-try {
-    $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
-    $decoded_array = (array) $decoded;
-    
-    echo "✅ TOKEN DECODIFICADO CORRECTAMENTE: " . json_encode($decoded_array, JSON_PRETTY_PRINT);
-    exit();
-} catch (Exception $e) {
-    http_response_code(401);
-    echo "❌ ERROR AL DECODIFICAR TOKEN: " . htmlspecialchars($e->getMessage());
-    exit();
-}
-
-// Función de depuración para registrar errores
-function debug_log($message) {
-    error_log("DEBUG: " . $message);
-}
-?>
+CREATE TABLE objetos_descripcion (
+    id_item INT PRIMARY KEY,
+    Nombre VARCHAR(255),
+    Imagen VARCHAR(500),
+    Costo VARCHAR(255),
+    Descripcion TEXT,
+    FOREIGN KEY (id_item) REFERENCES objetos(id_item) ON DELETE CASCADE
+);

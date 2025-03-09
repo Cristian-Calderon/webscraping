@@ -1,0 +1,104 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Detalles del Héroe{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 id="hero-name" class="text-center"></h1>
+    <div class="row">
+        <div class="col-md-4">
+            <img id="hero-image" class="img-fluid rounded" alt="Imagen del Héroe">
+        </div>
+        <div class="col-md-8">
+            <h3>Descripción</h3>
+            <p id="hero-description"></p>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Habilidades</h3>
+    <div class="row" id="hero-abilities"></div>
+
+    <h3 class="mt-4">Perfil del Héroe</h3>
+    <table class="table table-bordered mt-3">
+        <tbody>
+            <tr><th>Popularidad</th><td id="hero-popularidad"></td></tr>
+            <tr><th>Porcentaje de Victoria</th><td id="hero-porcentaje"></td></tr>
+            <tr><th>Resultado</th><td id="hero-resultado"></td></tr>
+            <tr><th>Fuerza</th><td id="hero-fuerza"></td></tr>
+            <tr><th>Agilidad</th><td id="hero-agilidad"></td></tr>
+            <tr><th>Inteligencia</th><td id="hero-inteligencia"></td></tr>
+            <tr><th>Velocidad de Movimiento</th><td id="hero-velocidad"></td></tr>
+            <tr><th>Rango de Visión</th><td id="hero-vision"></td></tr>
+            <tr><th>Armadura</th><td id="hero-armadura"></td></tr>
+            <tr><th>Tiempo de Ataque Base</th><td id="hero-ataque_base"></td></tr>
+            <tr><th>Daño</th><td id="hero-damage"></td></tr>
+            <tr><th>Punto de Ataque</th><td id="hero-punto_ataque"></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const heroId = urlParams.get("id");
+
+        if (!heroId) {
+            alert("Héroe no encontrado");
+            window.location.href = "/heroes";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/api.php?resource=heroes&id=${heroId}`);
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+                window.location.href = "/heroes";
+                return;
+            }
+
+            document.getElementById("hero-name").innerText = data.nombre;
+            document.getElementById("hero-image").src = data.link_img;
+            document.getElementById("hero-description").innerText = data.descripcion || "Sin descripción.";
+
+            // Habilidades
+            const abilitiesContainer = document.getElementById("hero-abilities");
+            abilitiesContainer.innerHTML = "";
+            if (data.habilidades.length > 0) {
+                data.habilidades.forEach(habilidad => {
+                    abilitiesContainer.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card bg-light mb-3">
+                                <img src="${habilidad.imagen}" class="card-img-top" alt="${habilidad.nombre_habilidad}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${habilidad.nombre_habilidad}</h5>
+                                    <p class="card-text">${habilidad.descripcion}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                abilitiesContainer.innerHTML = "<p>No hay habilidades registradas.</p>";
+            }
+
+            // Perfil del Héroe
+            document.getElementById("hero-popularidad").innerText = data.perfil.popularidad || "N/A";
+            document.getElementById("hero-porcentaje").innerText = data.perfil.porcentaje_victoria || "N/A";
+            document.getElementById("hero-resultado").innerText = data.perfil.resultado || "N/A";
+            document.getElementById("hero-fuerza").innerText = data.perfil.fuerza || "N/A";
+            document.getElementById("hero-agilidad").innerText = data.perfil.agilidad || "N/A";
+            document.getElementById("hero-inteligencia").innerText = data.perfil.inteligencia || "N/A";
+            document.getElementById("hero-velocidad").innerText = data.perfil.velocidad_movimiento || "N/A";
+            document.getElementById("hero-vision").innerText = data.perfil.rango_vision || "N/A";
+            document.getElementById("hero-armadura").innerText = data.perfil.armadura || "N/A";
+            document.getElementById("hero-ataque_base").innerText = data.perfil.tiempo_ataque_base || "N/A";
+            document.getElementById("hero-damage").innerText = data.perfil.damage || "N/A";
+            document.getElementById("hero-punto_ataque").innerText = data.perfil.punto_ataque || "N/A";
+
+        } catch (error) {
+            console.error("Error al cargar el héroe:", error);
+        }
+    });
+</script>
+{% endblock %}
