@@ -109,22 +109,40 @@
     }
 
     function agregarHeroe() {
-        let nombre = document.getElementById("heroName").value;
-        let link_img = document.getElementById("heroImage").value;
-        let link_page = document.getElementById("heroPage").value;
+    let nombre = document.getElementById("heroName").value;
+    let link_img = document.getElementById("heroImage").value;
+    let link_page = document.getElementById("heroPage").value;
 
-        if (nombre && link_img && link_page) {
-            fetch("/api/heroes.php", {
-                method: "POST",
-                body: JSON.stringify({ nombre, link_img, link_page }),
-                headers: { "Content-Type": "application/json" }
-            }).then(() => {
+    if (nombre && link_img && link_page) {
+        fetch("/api/heroes.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, link_img, link_page })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Héroe agregado correctamente");
+
+                // Limpiar el formulario antes de cerrar
                 document.getElementById("heroForm").reset();
-                cargarHeroes();
-                new bootstrap.Modal(document.getElementById('addHeroModal')).hide();
-            });
-        }
+
+                // Cerrar el modal correctamente
+                let modalElement = document.getElementById('addHeroModal');
+                let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) modalInstance.hide();
+
+                cargarHeroes(); // Refrescar la lista de héroes
+            } else {
+                alert("Error al agregar héroe: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error al agregar héroe:", error));
+    } else {
+        alert("Todos los campos son obligatorios");
     }
+}
+
 
     function editarHeroe(id, nombre, link_img, link_page) {
         document.getElementById("editHeroId").value = id;
