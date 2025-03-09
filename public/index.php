@@ -33,10 +33,12 @@ $routes = [
 ];
 
 // 🔹 Validación de autenticación para rutas protegidas
-if ($request_uri === 'heroes') {
+if (in_array($request_uri, ['dashboard', 'admin', 'heroes'])) {
     $token = $_COOKIE['auth_token'] ?? null;
     if (!$token) {
-        die("❌ DEBUG: No hay token en la cookie. Redirigiendo a login.");
+        error_log("DEBUG: Redirigiendo a login, token no presente.");
+        header('Location: /login');
+        exit();
     }
     
     try {
@@ -53,13 +55,13 @@ if ($request_uri === 'heroes') {
             die("❌ DEBUG: Usuario no encontrado en la base de datos.");
         }
 
-        // Verificar si `heroes.html.twig` existe
-        if (!file_exists(__DIR__ . "/templates/heroes.html.twig")) {
-            die("❌ DEBUG: Archivo heroes.html.twig no encontrado.");
+        // Verificar si la plantilla existe antes de renderizar
+        if (!isset($routes[$request_uri]) || !file_exists(__DIR__ . "/templates/" . $routes[$request_uri])) {
+            die("❌ DEBUG: Archivo de plantilla no encontrado para $request_uri.");
         }
 
         // Renderizar la página
-        echo $twig->render('heroes.html.twig', [
+        echo $twig->render($routes[$request_uri], [
             'username' => $user['username'],
             'email' => $user['email'],
             'user_id' => $user_id,

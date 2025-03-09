@@ -25,7 +25,6 @@ error_log("DEBUG: path = " . print_r($path, true));
 
 // Validar si la ruta es correcta
 if (count($path) < 1 || strpos($path[0], 'heroes') === false) {
-
     http_response_code(404);
     echo json_encode(["error" => "Endpoint no encontrado", "debug" => $path]);
     exit;
@@ -55,22 +54,69 @@ switch ($method) {
         }
         break;
     
-    case 'PUT':
-    case 'DELETE':
-        verifyToken(); // Verifica autenticación solo para métodos protegidos
-        parse_str(file_get_contents("php://input"), $data);
-        
-        if ($method === 'PUT') {
-            $stmt = $pdo->prepare("UPDATE heroes SET nombre = ?, link_img = ?, link_page = ? WHERE id_heroe = ?");
-            $success = $stmt->execute([$data['nombre'], $data['link_img'], $data['link_page'], $_GET['id']]);
-        } elseif ($method === 'DELETE') {
-            $stmt = $pdo->prepare("DELETE FROM heroes WHERE id_heroe = ?");
-            $success = $stmt->execute([$_GET['id']]);
+    case 'POST':
+        $user_id = verifyToken(); // Obtener el usuario autenticado
+
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (!isset($data['nombre'], $data['link_img'], $data['link_page'])) {
+            die(json_encode(["error" => "Faltan datos para crear el héroe."]));
         }
-        echo json_encode(["success" => $success]);
+        $stmt = $pdo->prepare("INSERT INTO heroes (nombre, link_img, link_page) VALUES (?, ?, ?)");
+        $stmt->execute([$data['nombre'], $data['link_img'], $data['link_page']]);
+        echo json_encode(["success" => "Héroe agregado"]);
+        break;
+    
+        case 'PUT':
+            $user_id = verifyToken(); // Verifica autenticación
+            $data = json_decode(file_get_contents("php://input"), true);
+        
+            if (!isset($data['id'], $data['nombre'], $data['link_img'], $data['link_page'])) {
+                die(json_encode(["error" => "Faltan datos para actualizar el héroe."]));
+            }
+        
+            $stmt = $pdo->prepare("UPDATE heroes SET nombre = ?, link_img = ?, link_page = ? WHERE id_heroe = ?");
+            $success = $stmt->execute([$data['nombre'], $data['link_img'], $data['link_page'], $data['id']]);
+        
+            if ($success) {
+                echo json_encode(["success" => "Héroe actualizado correctamente"]);
+            } else {
+                echo json_encode(["error" => "Error al actualizar héroe"]);
+            }
+            break;
+        
+    
+        case 'DELETE':
+            $user_id = verifyToken(); // Obtener el usuario autenticado
+  // Verifica autenticación
+        
+            // Obtener datos enviados por JSON
+            $data = json_decode(file_get_contents("php://input"), true);
+        
+            if (!isset($data['id'])) {
+                echo json_encode(["error" => "ID requerido para eliminar el héroe."]);
+                exit;
+            }
+        
+            try {
+                $stmt = $pdo->prepare("DELETE FROM heroes WHERE id_heroe = ?");
+                $stmt->execute([$data['id']]);
+        
+                if ($stmt->rowCount() > 0) {
+                    echo json_encode(["success" => "Héroe eliminado"]);
+                } else {
+                    echo json_encode(["error" => "No se encontró el héroe con ese ID."]);
+                }
+            } catch (PDOException $e) {
+                echo json_encode(["error" => "Error en la base de datos", "message" => $e->getMessage()]);
+            }
+            exit;        
+
         break;
     
     default:
         http_response_code(405);
         echo json_encode(["error" => "Método no permitido"]);
 }
+
+
+

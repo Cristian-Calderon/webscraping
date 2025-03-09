@@ -1,0 +1,49 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Habilidades{% endblock %}
+
+{% block content %}
+<h1>Lista de Habilidades</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Acciones</th>
+    </tr>
+    {% for habilidad in habilidades %}
+    <tr>
+        <td>{{ habilidad.id }}</td>
+        <td>{{ habilidad.nombre }}</td>
+        <td>
+            <button onclick="editarHabilidad({{ habilidad.id }}, '{{ habilidad.nombre }}')">Editar</button>
+            <button onclick="eliminarHabilidad({{ habilidad.id }})">Eliminar</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function editarHabilidad(id, nombre) {
+    let nuevoNombre = prompt("Nuevo nombre:", nombre);
+    if (nuevoNombre) {
+        fetch("/api/habilidades.php", {
+            method: "PUT",
+            body: JSON.stringify({ id: id, nombre: nuevoNombre }),
+            headers: { "Content-Type": "application/json" }
+        }).then(() => location.reload());
+    }
+}
+
+function eliminarHabilidad(id) {
+    if (confirm("¿Seguro que deseas eliminar esta habilidad?")) {
+        fetch("/api/habilidades.php", {
+            method: "DELETE",
+            body: JSON.stringify({ id: id }),
+            headers: { "Content-Type": "application/json" }
+        }).then(() => location.reload());
+    }
+}
+</script>
+
+{% endblock %}

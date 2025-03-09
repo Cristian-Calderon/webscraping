@@ -3,13 +3,85 @@
 {% block title %}Lista de Héroes{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
     <h1 class="text-center">Lista de Héroes</h1>
+    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addHeroModal">➕ Agregar Héroe</button>
     <div class="row mt-4" id="heroes-container"></div>
 </div>
 
+<!-- Modal para agregar héroe -->
+<div class="modal fade" id="addHeroModal" tabindex="-1" aria-labelledby="addHeroModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addHeroModalLabel">Agregar Nuevo Héroe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="heroForm">
+                    <div class="mb-3">
+                        <label for="heroName" class="form-label">Nombre del Héroe</label>
+                        <input type="text" class="form-control" id="heroName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="heroImage" class="form-label">URL de la Imagen</label>
+                        <input type="text" class="form-control" id="heroImage" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="heroPage" class="form-label">URL de la Página</label>
+                        <input type="text" class="form-control" id="heroPage" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="agregarHeroe()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar héroe -->
+<div class="modal fade" id="editHeroModal" tabindex="-1" aria-labelledby="editHeroModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editHeroModalLabel">Editar Héroe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editHeroForm">
+                    <input type="hidden" id="editHeroId">
+                    <div class="mb-3">
+                        <label for="editHeroName" class="form-label">Nombre del Héroe</label>
+                        <input type="text" class="form-control" id="editHeroName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHeroImage" class="form-label">URL de la Imagen</label>
+                        <input type="text" class="form-control" id="editHeroImage" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHeroPage" class="form-label">URL de la Página</label>
+                        <input type="text" class="form-control" id="editHeroPage" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarEdicionHeroe()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    document.addEventListener("DOMContentLoaded", async function() {
+    document.addEventListener("DOMContentLoaded", async function () {
+        cargarHeroes();
+    });
+
+    async function cargarHeroes() {
         try {
             const response = await fetch("/api/heroes.php");
             const heroes = await response.json();
@@ -18,12 +90,14 @@
 
             heroes.forEach(heroe => {
                 const heroCard = `
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card bg-secondary text-white mb-3">
                             <img src="${heroe.link_img}" class="card-img-top" alt="${heroe.nombre}">
                             <div class="card-body">
                                 <h5 class="card-title">${heroe.nombre}</h5>
                                 <a href="${heroe.link_page}" class="btn btn-primary" target="_blank">Ver más</a>
+                                <button class="btn btn-warning mt-2" onclick="editarHeroe(${heroe.id_heroe}, '${heroe.nombre}', '${heroe.link_img}', '${heroe.link_page}')">✏️ Editar</button>
+                                <button class="btn btn-danger mt-2" onclick="eliminarHeroe(${heroe.id_heroe})">🗑️ Eliminar</button>
                             </div>
                         </div>
                     </div>`;
@@ -32,6 +106,102 @@
         } catch (error) {
             console.error("Error al cargar héroes:", error);
         }
-    });
+    }
+
+    function agregarHeroe() {
+        let nombre = document.getElementById("heroName").value;
+        let link_img = document.getElementById("heroImage").value;
+        let link_page = document.getElementById("heroPage").value;
+
+        if (nombre && link_img && link_page) {
+            fetch("/api/heroes.php", {
+                method: "POST",
+                body: JSON.stringify({ nombre, link_img, link_page }),
+                headers: { "Content-Type": "application/json" }
+            }).then(() => {
+                document.getElementById("heroForm").reset();
+                cargarHeroes();
+                new bootstrap.Modal(document.getElementById('addHeroModal')).hide();
+            });
+        }
+    }
+
+    function editarHeroe(id, nombre, link_img, link_page) {
+        document.getElementById("editHeroId").value = id;
+        document.getElementById("editHeroName").value = nombre;
+        document.getElementById("editHeroImage").value = link_img;
+        document.getElementById("editHeroPage").value = link_page;
+
+        let editModal = new bootstrap.Modal(document.getElementById('editHeroModal'));
+        editModal.show();
+    }
+
+    function guardarEdicionHeroe() {
+        let id = Number(document.getElementById("editHeroId").value); // Convertir a número
+        let nombre = document.getElementById("editHeroName").value;
+        let link_img = document.getElementById("editHeroImage").value;
+        let link_page = document.getElementById("editHeroPage").value;
+
+        fetch("/api/heroes.php", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + getCookie("auth_token") // Asegurar autenticación
+            },
+            body: JSON.stringify({ id, nombre, link_img, link_page })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Héroe actualizado correctamente");
+
+                    // Cerrar el modal correctamente
+                    let editModal = document.getElementById('editHeroModal');
+                    let modalInstance = bootstrap.Modal.getInstance(editModal);
+                    if (modalInstance) modalInstance.hide();
+
+                    cargarHeroes(); // Refrescar lista de héroes
+                } else {
+                    alert("Error al actualizar héroe: " + data.error);
+                }
+            }).catch(error => console.error("Error al actualizar héroe:", error));
+    }
+
+    // Función para obtener el valor de una cookie
+    function getCookie(name) {
+        let cookieArr = document.cookie.split(";");
+        for (let i = 0; i < cookieArr.length; i++) {
+            let cookiePair = cookieArr[i].split("=");
+            if (name.trim() === cookiePair[0].trim()) {
+                return cookiePair[1];
+            }
+        }
+        return null;
+    }
+
+
+
+    function eliminarHeroe(id) {
+        fetch('/api/heroes.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Héroe eliminado correctamente");
+                    location.reload(); // Recargar la página para actualizar la lista
+                } else {
+                    alert("Error al eliminar: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
+
+
 </script>
+
 {% endblock %}
