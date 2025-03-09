@@ -1,21 +1,28 @@
 <?php
 session_start();
 
-// Si el usuario no está autenticado, redirigir al login
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_COOKIE['auth_token'])) {
     header("Location: /login");
     exit();
 }
 
-// Cargar Twig
 require_once '../vendor/autoload.php';
-$loader = new \Twig\Loader\FilesystemLoader('../templates');
-$twig = new \Twig\Environment($loader);
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
-// Renderizar la página de héroes
-echo $twig->render('heroes.html.twig', [
-    'username' => $_SESSION['username'],
-    'email' => $_SESSION['email'],
-    'user_id' => $_SESSION['user_id']
-]);
-?>
+$jwt_secret = "TU_CLAVE_SECRETA"; // Usa la misma clave que en login.php
+
+try {
+    $decoded = JWT::decode($_COOKIE['auth_token'], new Key($jwt_secret, 'HS256'));
+    $user_id = $decoded->sub;
+
+    // Cargar Twig
+    $loader = new \Twig\Loader\FilesystemLoader('../templates');
+    $twig = new \Twig\Environment($loader);
+
+    // Renderizar la página de héroes
+    echo $twig->render('heroes.html.twig', ['user_id' => $user_id]);
+} catch (Exception $e) {
+    header("Location: /login");
+    exit();
+}

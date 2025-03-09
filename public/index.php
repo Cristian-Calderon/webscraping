@@ -32,106 +32,57 @@ $routes = [
     'heroes' => 'heroes.html.twig'
 ];
 
-// 🔹 Si la ruta es "admin/delete/{id}", procesar la eliminación
-if (preg_match('/^admin\/delete\/(\d+)$/', $request_uri, $matches)) {
-    if (!isset($_COOKIE['auth_token'])) {
-        die("❌ No autorizado.");
+// 🔹 Validación de autenticación para rutas protegidas
+if ($request_uri === 'heroes') {
+    $token = $_COOKIE['auth_token'] ?? null;
+    if (!$token) {
+        die("❌ DEBUG: No hay token en la cookie. Redirigiendo a login.");
     }
-
-    $token = $_COOKIE['auth_token'];
+    
     try {
         $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
         $user_id = $decoded->sub;
+        error_log("✅ DEBUG: Token válido. Usuario ID: " . $user_id);
 
-        // Verificar si el usuario autenticado es admin
-        $stmt = $pdo->prepare('SELECT role FROM users WHERE id = ?');
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-
-        if (!$user || $user['role'] !== 'admin') {
-            die("❌ No tienes permisos para eliminar usuarios.");
-        }
-
-        // Obtener el ID del usuario a eliminar desde la URL
-        $delete_id = $matches[1];
-
-        // Evitar que un admin se elimine a sí mismo
-        if ($delete_id == $user_id) {
-            die("❌ No puedes eliminar tu propia cuenta.");
-        }
-
-        // Eliminar el usuario de la base de datos
-        $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
-        $stmt->execute([$delete_id]);
-
-        // Redirigir de vuelta al panel de administración
-        header('Location: /admin');
-        exit();
-    } catch (Exception $e) {
-        die("❌ Token inválido.");
-    }
-}
-
-// 🔹 Si la ruta es "dashboard" o "admin", validar autenticación
-if ($request_uri === 'dashboard' || $request_uri === 'admin') {
-    if (!isset($_COOKIE['auth_token'])) {
-        header('Location: /login');
-        exit();
-    }
-
-    $token = $_COOKIE['auth_token'];
-    try {
-        $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
-        $user_id = $decoded->sub;
-
-        // Obtener datos del usuario
+        // Obtener datos del usuario desde la BD
         $stmt = $pdo->prepare('SELECT username, email, role FROM users WHERE id = ?');
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
 
         if (!$user) {
-            die("❌ Error: Usuario no encontrado.");
+            die("❌ DEBUG: Usuario no encontrado en la base de datos.");
         }
 
-        // 🔹 Si la ruta es "admin", verificar que el usuario sea admin
-        if ($request_uri === 'admin') {
-            if ($user['role'] !== 'admin') {
-                die("❌ Acceso denegado. Solo administradores pueden acceder.");
-            }
-
-            // Obtener la lista de usuarios
-            $stmt = $pdo->query('SELECT id, username, email, role FROM users');
-            $users = $stmt->fetchAll();
-
-            // Renderizar la página de administración
-            echo $twig->render('admin.html.twig', [
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-                'users' => $users
-            ]);
-            exit();
+        // Verificar si `heroes.html.twig` existe
+        if (!file_exists(__DIR__ . "/templates/heroes.html.twig")) {
+            die("❌ DEBUG: Archivo heroes.html.twig no encontrado.");
         }
 
-        // Renderizar el dashboard con los datos del usuario (Ahora incluye el rol)
-        echo $twig->render('dashboard.html.twig', [
+        // Renderizar la página
+        echo $twig->render('heroes.html.twig', [
             'username' => $user['username'],
             'email' => $user['email'],
             'user_id' => $user_id,
-            'role' => $user['role'] // 🔹 Ahora Twig sabe si el usuario es admin
+            'role' => $user['role']
         ]);
         exit();
     } catch (Exception $e) {
-        header('Location: /login');
-        exit();
+        die("❌ DEBUG: Error al decodificar el token: " . $e->getMessage());
     }
 }
 
-// 🔹 Si la ruta existe en el array de rutas, renderizar la página
+// 🔹 Renderizar la página si la ruta existe
 if (array_key_exists($request_uri, $routes)) {
+    error_log("DEBUG: Renderizando página pública de $request_uri.");
     echo $twig->render($routes[$request_uri]);
 } else {
-    // 🔹 Si la ruta no existe, mostrar error en lugar de 404
     http_response_code(404);
+    error_log("DEBUG: Ruta no encontrada: $request_uri");
     die("❌ Error: La ruta '" . htmlspecialchars($request_uri) . "' no existe en el sistema.");
 }
+
+// Función de depuración para registrar errores
+function debug_log($message) {
+    error_log("DEBUG: " . $message);
+}
+?>

@@ -1,121 +1,159 @@
-ahora necesito otra csv que se llame objetos-description que use como parametro el csv que acabamos de crear el
-dota_items.csv de este necesitamos el tercer parametro:
-id_item,Nombre,Link
-1,Aghanim's Shard,https://es.dotabuff.com/items/aghanims-shard
-2,Aghanim's Scepter,https://es.dotabuff.com/items/aghanims-scepter
+📌 Modifica index.php y asegúrate de que $token siempre tenga un valor antes de decodificarlo.
 
-El link recorremos todos los objetos y entraremos a cada pagina del item tenemos que guardar lo siguiente:
-id_item, nombre, costo, descripcion hay objetos que no tiene costo porque son objetos neutrales. tambien existen objetos
-que no tiene descripcion esos por favor no los guardes. ahora te paso las etiquetas que necesitas:
+Antes (línea 120, donde da el error):
 
-por ejemplo de este primer item podemos guardar:
+php
+Copy
+Edit
+$token = $_COOKIE['auth_token'];
+🔹 Cambia por esta versión con validación de existencia:
 
-el nombre: Aghanim's Shard, img que seria un link, tiene un costo de gold= 1400, y tiene una descripcion: With origins
-known only to a single wizard, fragments of this impossible crystal are nearly as
-coveted as the renowned scepter itself.
-<div class="embedded-tooltip">
-    <div class="item-tooltip reborn-tooltip">
-        <div class="tooltip-header">
-            <div class="avatar">
-                <div class="image-container image-container-avatar image-container-item"><a
-                        href="/items/aghanims-shard"><img alt="Aghanim's Shard" class="image-avatar image-item"
-                            rel="tooltip-remote" data-tooltip-url="/items/aghanims-shard/tooltip"
-                            src="/assets/items/aghanims-shard-4e79e040a49fe45c7aa7aeb2b0776c06488564bc5cd33e742960153363910526.jpg"
-                            data-hasqtip="127" oldtitle="Aghanim's Shard" title=""></a></div>
-            </div>
-            <div class="name">Aghanim's Shard</div>
-            <div class="shop-icons"><img
-                    src="/assets/shop_main-66f7c3d4659240906fadbfca4542f4c360e9ef4d020d9eb0f946c9eb1179787a.png"></div>
-            <div class="price"><span class="gold-icon"><img
-                        src="/assets/gold-icon-reborn-6a472fefb1599cf8acc751abc05070aff6e88a6e1008d9c2fdd2f1cb44591412.png"></span><span
-                    class="value"><span class="number">1400</span></span></div>
-            <div class="clearfix"></div>
-        </div>
-        <div class="description">
-            <div class="description-block passive">
-                <div class="description-block-header">Passive: Ability Upgrade</div>Upgrades an existing ability or adds
-                a new ability to your hero.
-            </div>
-        </div>
-        <div class="lore">With origins known only to a single wizard, fragments of this impossible crystal are nearly as
-            coveted as the renowned scepter itself.</div>
-        <div class="shop">
-            <div class="shop-icons"><img
-                    src="/assets/shop_main-66f7c3d4659240906fadbfca4542f4c360e9ef4d020d9eb0f946c9eb1179787a.png"></div>
-            Disponible en la tienda local
-        </div>
-    </div>
-</div>
+php
+Copy
+Edit
+$token = $_COOKIE['auth_token'] ?? null;
 
-ahora te pasare otro de objeto neutral:
-por ejemplo este no tiene costo es un objeto neutral pero si tiene descripcion: Activate to redeem...
-<div class="embedded-tooltip">
-    <div class="item-tooltip reborn-tooltip">
-        <div class="tooltip-header">
-            <div class="avatar">
-                <div class="image-container image-container-avatar image-container-item"><a
-                        href="/items/tier-5-token"><img alt="Tier 5 Token" class="image-avatar image-item"
-                            rel="tooltip-remote" data-tooltip-url="/items/tier-5-token/tooltip"
-                            src="/assets/items/tier-5-token-24de71f3ff5ae262e48f0bd91f0d5d7bd3c53f3f21647c63100786a5b46286d6.jpg"
-                            data-hasqtip="1" oldtitle="Tier 5 Token" title=""></a></div>
-            </div>
-            <div class="name">Tier 5 Token</div>
-            <div class="price"><span>Neutral Item</span></div>
-            <div class="clearfix"></div>
-        </div>
-        <div class="description">
-            <div class="description-block ">Activate to redeem a Tier <span class="number">5</span> Neutral Item. The
-                resulting neutral item isn't shareable and a hero can only redeem a single token per tier.</div>
-        </div>
-    </div>
-</div>
+if (!$token) {
+    debug_log("❌ No se encontró el token en la cookie.");
+    header('Location: /login');
+    exit();
+}
+✅ Esto asegura que JWT::decode() solo se ejecutará si el token realmente existe.
 
-Hay otros objetos que no tiene descripcion en esos casos por favor ignorar y no guardarlos.
-como este ejemplo:
-<div class="embedded-tooltip">
-    <div class="item-tooltip reborn-tooltip">
-        <div class="tooltip-header">
-            <div class="avatar">
-                <div class="image-container image-container-avatar image-container-item"><a
-                        href="/items/fleetfooted"><img alt="Fleetfooted" class="image-avatar image-item"
-                            rel="tooltip-remote" data-tooltip-url="/items/fleetfooted/tooltip"
-                            src="/assets/items/fleetfooted-0598a6330f0cf6ece0a38fde45a96507b3fec7c4cc1dd2ea0c8a8490cfb3c33d.jpg"
-                            data-hasqtip="127" oldtitle="Fleetfooted" title=""></a></div>
-            </div>
-            <div class="name">Fleetfooted</div>
-            <div class="price"><span>Neutral Item</span></div>
-            <div class="clearfix"></div>
-        </div>
-        <div class="description"></div>
-        <div class="notes">
-            <p>Does not stack with Movement Speed bonuses from boots</p>
-        </div>
-    </div>
-</div>
+Como hago estos cambios en mi index.php manteniendo la logica que ya tiene: 
 
---otra pregunta.
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-igual quiero consultarte sobre otro csv que tengo que quisiera que me ayudes con la logica es de los objetos, de igual
-manera ya tengo los csv solo quiero mostrarte como estan estructurados. tengo uno que se llama objetos que guarda el id
-el nombre y el link de cada pagina.
+require __DIR__ . '/auth/config.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-objetos.csv
-id_item,Nombre,Link
-1,Aghanim's Shard,https://es.dotabuff.com/items/aghanims-shard
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
-objetos-description
-y la otra tabla es:
-id_item,Nombre,Imagen,Costo,Descripción
-1,Aghanim's Shard,https://es.dotabuff.com/assets/items/aghanims-shard-4e79e040a49fe45c7aa7aeb2b0776c06488564bc5cd33e742960153363910526.jpg,1400,"Passive: Ability Upgrade
-Upgrades an existing ability or adds a new ability to your hero. Passive: Ability Upgrade"
-2,Aghanim's Scepter,https://es.dotabuff.com/assets/items/aghanims-scepter-d304fe07769b81d0c2624d78b12ed3a97194470b18d1999f8d5ed5654d8b1691.jpg,4200,"Passive: Ability Upgrade
-Upgrades the ultimate, and some abilities, of all heroes. Passive: Ability Upgrade"
-3,Magic Wand,https://es.dotabuff.com/assets/items/magic-wand-8705c4305218afde38f755a6bdb2bb54da60a4b3ce6d8163950015c5f2bad52e.jpg,450,"Active: Energy Charge
-Instantly restores 15 health and mana per charge stored.
+// Configurar Twig con la carpeta de templates
+$templatesPath = realpath(__DIR__ . '/templates');
+if (!$templatesPath || !is_dir($templatesPath)) {
+    die("Error: La carpeta templates NO EXISTE en " . __DIR__ . '/templates');
+}
 
-Max 20 charges. Gains a charge whenever a visible enemy within 1200 range uses an ability. Active: Energy Charge 15 15"
-4,Power Treads,https://es.dotabuff.com/assets/items/power-treads-980cb4e9fc74127f29942cbfe149be2b414eec7e1614b860a4a6d312bc07f4a9.jpg,1400,"Active: Switch Attribute
-Switches between +10 Strength, +10 Agility, or +10 Intelligence.
-Movement speed bonuses from multiple pairs of boots do not stack. Active: Switch Attribute"
-5,Blink Dagger,https://es.dotabuff.com/assets/items/blink-dagger-baaa3b7c2ac85481cfd574b8f305bcae4c8f4117e8f4050d100aa1da213a863d.jpg,2250,"Active: Blink
-Teleport to a target point up to 1200 units away.
+$loader = new \Twig\Loader\FilesystemLoader($templatesPath);
+$twig = new \Twig\Environment($loader, [
+    //'cache' => __DIR__ . '/../cache',
+]);
+
+// Obtener la ruta actual desde $_GET['route']
+$request_uri = $_GET['route'] ?? 'home'; // Si no hay ruta, se carga "home"
+
+// Mapeo de rutas a sus respectivos archivos Twig
+$routes = [
+    'home' => 'home.html.twig',
+    'register' => 'register.html.twig',
+    'login' => 'login.html.twig',
+    'dashboard' => 'dashboard.html.twig',
+    'admin' => 'admin.html.twig',
+    'heroes' => 'heroes.html.twig'
+];
+
+// 🔹 Si la ruta es "admin/delete/{id}", procesar la eliminación
+if (preg_match('/^admin\/delete\/(\d+)$/', $request_uri, $matches)) {
+    if (!isset($_COOKIE['auth_token'])) {
+        die("❌ No autorizado.");
+    }
+    
+    $token = $_COOKIE['auth_token'];
+    try {
+        $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
+        $user_id = $decoded->sub;
+        
+        $stmt = $pdo->prepare('SELECT role FROM users WHERE id = ?');
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+        
+        if (!$user || $user['role'] !== 'admin') {
+            die("❌ No tienes permisos para eliminar usuarios.");
+        }
+        
+        $delete_id = $matches[1];
+        
+        if ($delete_id == $user_id) {
+            die("❌ No puedes eliminar tu propia cuenta.");
+        }
+        
+        $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
+        $stmt->execute([$delete_id]);
+        
+        header('Location: /admin');
+        exit();
+    } catch (Exception $e) {
+        die("❌ Token inválido.");
+    }
+}
+
+debug_log("Cookies actuales: " . print_r($_COOKIE, true));
+
+// 🔹 Validación de autenticación para rutas protegidas
+if (in_array($request_uri, ['dashboard', 'admin', 'heroes'])) {
+    if (!isset($_COOKIE['auth_token']) || empty($_COOKIE['auth_token'])) {
+        debug_log("Redirigiendo a login: Token no presente. Cookies actuales: " . print_r($_COOKIE, true));
+        header('Location: /login');
+        exit();
+    }
+    
+    $token = $_COOKIE['auth_token'];
+    try {
+        $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
+        $user_id = $decoded->sub;
+        
+        $stmt = $pdo->prepare('SELECT username, email, role FROM users WHERE id = ?');
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+        
+        if (!$user) {
+            die("❌ Error: Usuario no encontrado.");
+        }
+        
+        if ($request_uri === 'admin' && $user['role'] !== 'admin') {
+            die("❌ Acceso denegado. Solo administradores pueden acceder.");
+        }
+        
+        echo $twig->render($routes[$request_uri], [
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'user_id' => $user_id,
+            'role' => $user['role']
+        ]);
+        exit();
+    } catch (Exception $e) {
+        header('Location: /login');
+        exit();
+    }
+}
+
+// 🔹 Renderizar la página si la ruta existe
+if (array_key_exists($request_uri, $routes)) {
+    echo $twig->render($routes[$request_uri]);
+} else {
+    http_response_code(404);
+    die("❌ Error: La ruta '" . htmlspecialchars($request_uri) . "' no existe en el sistema.");
+}
+
+// 🔹 Manejo de decodificación del token con mejoras
+try {
+    $decoded = JWT::decode($token, new Key($jwt_secret, 'HS256'));
+    $decoded_array = (array) $decoded;
+    
+    echo "✅ TOKEN DECODIFICADO CORRECTAMENTE: " . json_encode($decoded_array, JSON_PRETTY_PRINT);
+    exit();
+} catch (Exception $e) {
+    http_response_code(401);
+    echo "❌ ERROR AL DECODIFICAR TOKEN: " . htmlspecialchars($e->getMessage());
+    exit();
+}
+
+// Función de depuración para registrar errores
+function debug_log($message) {
+    error_log("DEBUG: " . $message);
+}
+?>

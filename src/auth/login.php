@@ -44,11 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Guardar el token en una cookie segura
     setcookie("auth_token", $jwt, [
-        "expires" => time() + (60 * 60),
-        "path" => "/",
-        "httponly" => true, // Evita acceso desde JavaScript
-        "samesite" => "Strict"
+        'expires' => time() + (86400 * 30),
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax'
     ]);
+    
 
     echo "✅ Token generado correctamente: " . htmlspecialchars($jwt) . "<br>";
 
