@@ -28,7 +28,8 @@ $routes = [
     'register' => 'register.html.twig',
     'login' => 'login.html.twig',
     'dashboard' => 'dashboard.html.twig',
-    'admin' => 'admin.html.twig'
+    'admin' => 'admin.html.twig',
+    'heroes' => 'heroes.html.twig'
 ];
 
 // 🔹 Si la ruta es "admin/delete/{id}", procesar la eliminación
@@ -66,7 +67,6 @@ if (preg_match('/^admin\/delete\/(\d+)$/', $request_uri, $matches)) {
         // Redirigir de vuelta al panel de administración
         header('Location: /admin');
         exit();
-
     } catch (Exception $e) {
         die("❌ Token inválido.");
     }
@@ -121,7 +121,6 @@ if ($request_uri === 'dashboard' || $request_uri === 'admin') {
             'role' => $user['role'] // 🔹 Ahora Twig sabe si el usuario es admin
         ]);
         exit();
-
     } catch (Exception $e) {
         header('Location: /login');
         exit();
@@ -136,4 +135,3 @@ if (array_key_exists($request_uri, $routes)) {
     http_response_code(404);
     die("❌ Error: La ruta '" . htmlspecialchars($request_uri) . "' no existe en el sistema.");
 }
-?>

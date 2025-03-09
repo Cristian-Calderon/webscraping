@@ -1,4 +1,10 @@
 RewriteEngine On
+
+# Excluir la API para que Apache sirva los archivos directamente
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule .* - [L]
+
+# Redirigir todas las demás peticiones a index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]

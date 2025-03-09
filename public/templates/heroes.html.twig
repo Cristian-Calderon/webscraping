@@ -1,0 +1,37 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Lista de Héroes{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Lista de Héroes</h1>
+    <div class="row mt-4" id="heroes-container"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function() {
+        try {
+            const response = await fetch("/api/heroes.php");
+            const heroes = await response.json();
+            const container = document.getElementById("heroes-container");
+            container.innerHTML = "";
+
+            heroes.forEach(heroe => {
+                const heroCard = `
+                    <div class="col-md-4">
+                        <div class="card bg-secondary text-white mb-3">
+                            <img src="${heroe.link_img}" class="card-img-top" alt="${heroe.nombre}">
+                            <div class="card-body">
+                                <h5 class="card-title">${heroe.nombre}</h5>
+                                <a href="${heroe.link_page}" class="btn btn-primary" target="_blank">Ver más</a>
+                            </div>
+                        </div>
+                    </div>`;
+                container.innerHTML += heroCard;
+            });
+        } catch (error) {
+            console.error("Error al cargar héroes:", error);
+        }
+    });
+</script>
+{% endblock %}
