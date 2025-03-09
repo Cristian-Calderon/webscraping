@@ -30,7 +30,9 @@ $routes = [
     'dashboard' => 'dashboard.html.twig',
     'admin' => 'admin.html.twig',
     'heroes' => 'heroes.html.twig',
-    'detalle_heroe' => 'detalle_heroe.html.twig'
+    'detalle_heroe' => 'detalle_heroe.html.twig',
+    'objetos' => 'objetos.html.twig',
+    'detalle_objeto' => 'detalle_objeto.html.twig'
 ];
 
 // 🔹 Si la ruta es "detalle_heroe", obtener información desde la API
@@ -38,23 +40,48 @@ if ($request_uri === 'detalle_heroe') {
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         die("❌ ERROR: ID de héroe inválido o no proporcionado.");
     }
-    
+
     $id_heroe = intval($_GET['id']);
     $api_url = "http://webscraping.local/api/api.php?resource=heroes&id=" . $id_heroe;
     $response = file_get_contents($api_url);
-    
+
     if (!$response) {
         die("❌ ERROR: No se pudo obtener datos del héroe.");
     }
-    
+
     $hero_data = json_decode($response, true);
-    
+
     if (!$hero_data || isset($hero_data['error'])) {
         die("❌ ERROR: " . ($hero_data['error'] ?? "No se encontraron datos del héroe."));
     }
 
     echo $twig->render('detalle_heroe.html.twig', [
         'heroe' => $hero_data
+    ]);
+    exit();
+}
+
+if ($request_uri === 'detalle_objeto') {
+    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        die("❌ ERROR: ID de objeto inválido o no proporcionado.");
+    }
+
+    $id_objeto = intval($_GET['id']);
+    $api_url = "http://webscraping.local/api/api.php?resource=objetos&id=" . $id_objeto;
+    $response = file_get_contents($api_url);
+
+    if (!$response) {
+        die("❌ ERROR: No se pudo obtener datos del objeto.");
+    }
+
+    $objeto_data = json_decode($response, true);
+
+    if (!$objeto_data || isset($objeto_data['error'])) {
+        die("❌ ERROR: " . ($objeto_data['error'] ?? "No se encontraron datos del objeto."));
+    }
+
+    echo $twig->render('detalle_objeto.html.twig', [
+        'objeto' => $objeto_data
     ]);
     exit();
 }
@@ -111,7 +138,7 @@ if (array_key_exists($request_uri, $routes)) {
 }
 
 // Función de depuración para registrar errores
-function debug_log($message) {
+function debug_log($message)
+{
     error_log("DEBUG: " . $message);
 }
-?>

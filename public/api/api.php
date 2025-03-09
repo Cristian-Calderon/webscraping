@@ -25,7 +25,7 @@ switch ($resource) {
     case 'heroes':
         handleHeroes($method, $id, $pdo);
         break;
-    
+
     case 'objetos':
         handleObjetos($method, $id, $pdo);
         break;
@@ -36,7 +36,8 @@ switch ($resource) {
 }
 
 // ✅ Función para manejar Héroes (Crear, Leer, Editar, Eliminar)
-function handleHeroes($method, $id, $pdo) {
+function handleHeroes($method, $id, $pdo)
+{
     switch ($method) {
         case 'GET': // Obtener héroe y sus datos relacionados
             if ($id) {
@@ -117,11 +118,17 @@ function handleHeroes($method, $id, $pdo) {
 }
 
 // ✅ Función para manejar Objetos (Crear, Leer, Editar, Eliminar)
-function handleObjetos($method, $id, $pdo) {
+function handleObjetos($method, $id, $pdo)
+{
     switch ($method) {
         case 'GET': // Obtener objetos y sus descripciones
             if ($id) {
-                $stmt = $pdo->prepare("SELECT * FROM objetos WHERE id_item = ?");
+                $stmt = $pdo->prepare("
+                    SELECT o.id_item, o.Nombre, d.Imagen, d.Costo, d.Descripcion 
+                    FROM objetos o 
+                    LEFT JOIN objetos_descripcion d ON o.id_item = d.id_item
+                    WHERE o.id_item = ?
+                ");
                 $stmt->execute([$id]);
                 $objeto = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -130,15 +137,14 @@ function handleObjetos($method, $id, $pdo) {
                     return;
                 }
 
-                // Obtener descripción del objeto
-                $stmt = $pdo->prepare("SELECT * FROM objetos_descripcion WHERE id_item = ?");
-                $stmt->execute([$id]);
-                $objeto['descripcion'] = $stmt->fetch(PDO::FETCH_ASSOC);
-
                 echo json_encode($objeto);
             } else {
-                // Obtener todos los objetos
-                $stmt = $pdo->query("SELECT * FROM objetos");
+                // Obtener todos los objetos con su imagen
+                $stmt = $pdo->query("
+                    SELECT o.id_item, o.Nombre, d.Imagen 
+                    FROM objetos o 
+                    LEFT JOIN objetos_descripcion d ON o.id_item = d.id_item
+                ");
                 echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
             }
             break;
@@ -146,29 +152,82 @@ function handleObjetos($method, $id, $pdo) {
         case 'POST': // Crear un nuevo objeto
             verifyToken();
             $data = json_decode(file_get_contents("php://input"), true);
-            if (!isset($data['Nombre'], $data['Link'])) {
+            if (!isset($data['Nombre'], $data['Link'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
                 echo json_encode(["error" => "Faltan datos para crear el objeto."]);
                 return;
             }
 
-            // Insertar Objeto
-            $stmt = $pdo->prepare("INSERT INTO objetos (id_item, Nombre, Link) VALUES (?, ?, ?)");
-            $stmt->execute([$data['id_item'], $data['Nombre'], $data['Link']]);
+            try {
+                $pdo->beginTransaction();
 
-            echo json_encode(["success" => "Objeto agregado"]);
+                // Insertar Objeto
+                $stmt = $pdo->prepare("INSERT INTO objetos (Nombre, Link) VALUES (?, ?)");
+                $stmt->execute([$data['Nombre'], $data['Link']]);
+                $id_item = $pdo->lastInsertId();
+
+                // Insertar Descripción del Objeto
+                $stmt = $pdo->prepare("INSERT INTO objetos_descripcion (id_item, Nombre, Imagen, Costo, Descripcion) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$id_item, $data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion']]);
+
+                $pdo->commit();
+                echo json_encode(["success" => "Objeto agregado", "id_item" => $id_item]);
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                echo json_encode(["error" => "Error al agregar objeto", "message" => $e->getMessage()]);
+            }
             break;
 
-        case 'DELETE': // Eliminar objeto
+        case 'PUT': // Editar objeto y su descripción
+            verifyToken();
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (!isset($data['id'], $data['Nombre'], $data['Link'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
+                echo json_encode(["error" => "Faltan datos para actualizar el objeto."]);
+                return;
+            }
+
+            try {
+                $pdo->beginTransaction();
+
+                // Actualizar Objeto
+                $stmt = $pdo->prepare("UPDATE objetos SET Nombre = ?, Link = ? WHERE id_item = ?");
+                $stmt->execute([$data['Nombre'], $data['Link'], $data['id']]);
+
+                // Actualizar Descripción del Objeto
+                $stmt = $pdo->prepare("UPDATE objetos_descripcion SET Nombre = ?, Imagen = ?, Costo = ?, Descripcion = ? WHERE id_item = ?");
+                $stmt->execute([$data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion'], $data['id']]);
+
+                $pdo->commit();
+                echo json_encode(["success" => "Objeto actualizado"]);
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                echo json_encode(["error" => "Error al actualizar objeto", "message" => $e->getMessage()]);
+            }
+            break;
+
+        case 'DELETE': // Eliminar objeto y su descripción
             verifyToken();
             if (!$id) {
                 echo json_encode(["error" => "ID de objeto requerido"]);
                 return;
             }
 
-            $stmt = $pdo->prepare("DELETE FROM objetos WHERE id_item = ?");
-            $stmt->execute([$id]);
+            try {
+                $pdo->beginTransaction();
 
-            echo json_encode(["success" => "Objeto eliminado"]);
+                // Eliminar la descripción del objeto
+                $stmt = $pdo->prepare("DELETE FROM objetos_descripcion WHERE id_item = ?");
+                $stmt->execute([$id]);
+
+                // Eliminar el objeto
+                $stmt = $pdo->prepare("DELETE FROM objetos WHERE id_item = ?");
+                $stmt->execute([$id]);
+
+                $pdo->commit();
+                echo json_encode(["success" => "Objeto eliminado"]);
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                echo json_encode(["error" => "Error al eliminar objeto", "message" => $e->getMessage()]);
+            }
             break;
 
         default:
@@ -176,4 +235,4 @@ function handleObjetos($method, $id, $pdo) {
             echo json_encode(["error" => "Método no permitido"]);
     }
 }
-?>
+

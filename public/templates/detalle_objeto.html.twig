@@ -1,0 +1,50 @@
+{% extends "base-objetos.html.twig" %}
+
+{% block title %}Detalles del Objeto{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center">Detalles del Objeto</h1>
+    
+    <div class="card mx-auto bg-secondary text-white" style="width: 30rem;">
+        <img id="objeto-imagen" class="card-img-top" alt="">
+        <div class="card-body">
+            <h5 class="card-title" id="objeto-nombre"></h5>
+            <p class="card-text"><strong>Costo:</strong> <span id="objeto-costo"></span></p>
+            <p class="card-text" id="objeto-descripcion"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const params = new URLSearchParams(window.location.search);
+        const objetoId = params.get("id");
+
+        if (!objetoId) {
+            alert("ID de objeto no válido.");
+            window.location.href = "/objetos";
+        }
+
+        try {
+            const response = await fetch(`/api/api.php?resource=objetos&id=${objetoId}`);
+            const objeto = await response.json();
+
+            if (objeto.error) {
+                alert("No se encontró el objeto.");
+                window.location.href = "/objetos";
+            }
+
+            document.getElementById("objeto-nombre").innerText = objeto.Nombre;
+            document.getElementById("objeto-imagen").src = objeto.Imagen;
+            document.getElementById("objeto-costo").innerText = objeto.Costo;
+            document.getElementById("objeto-descripcion").innerText = objeto.Descripcion;
+
+        } catch (error) {
+            console.error("Error al cargar objeto:", error);
+        }
+    });
+</script>
+
+{% endblock %}

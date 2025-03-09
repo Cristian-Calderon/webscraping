@@ -1,0 +1,46 @@
+{% extends "base-objetos.html.twig" %}
+
+{% block title %}Lista de Objetos{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center">Lista de Objetos</h1>
+    <div class="row mt-4" id="objetos-container"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        cargarObjetos();
+    });
+
+    async function cargarObjetos() {
+        try {
+            const response = await fetch("/api/api.php?resource=objetos");
+            const objetos = await response.json();
+            const container = document.getElementById("objetos-container");
+            container.innerHTML = "";
+
+            objetos.forEach(objeto => {
+                const objetoCard = `
+                    <div class="col-md-3">
+                        <div class="card bg-secondary text-white mb-3">
+                            <a href="/detalle_objeto?id=${objeto.id_item}">
+                                <img src="${objeto.Imagen}" class="card-img-top" alt="${objeto.Nombre}">
+                            </a>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">${objeto.Nombre}</h5>
+                                <a href="/detalle_objeto?id=${objeto.id_item}" class="btn btn-primary">Ver Detalles</a>
+                            </div>
+                        </div>
+                    </div>`;
+                container.innerHTML += objetoCard;
+            });
+
+        } catch (error) {
+            console.error("Error al cargar objetos:", error);
+        }
+    }
+</script>
+
+{% endblock %}
