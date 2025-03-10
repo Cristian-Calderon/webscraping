@@ -8,8 +8,13 @@
     <h1 class="text-center">Lista de Objetos</h1>
     <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addObjetoModal">➕ Agregar
         Objeto</button>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="searchBar" placeholder="🔎 Buscar objeto..." onkeyup="filtrarObjetos()">
+        </div>
     <div class="row mt-4" id="objetos-container"></div>
+    <!-- Barra de búsqueda -->
 </div>
+
 
 <!-- Modal para agregar objeto -->
 <div class="modal fade" id="addObjetoModal" tabindex="-1" aria-labelledby="addObjetoModalLabel" aria-hidden="true">
@@ -87,40 +92,56 @@
 
 
 <script>
+    let listaObjetos = []; // Variable global para almacenar objetos
+
     document.addEventListener("DOMContentLoaded", async function () {
-        cargarObjetos();
+        await cargarObjetos();
     });
 
     async function cargarObjetos() {
         try {
             const response = await fetch("/api/api.php?resource=objetos");
-            const objetos = await response.json();
-            const container = document.getElementById("objetos-container");
-            container.innerHTML = "";
-
-            objetos.forEach(objeto => {
-                const objetoCard = `
-                <div class="col-md-3">
-                    <div class="card bg-secondary text-white mb-3">
-                        <a href="/detalle_objeto?id=${objeto.id_item}">
-                            <img src="${objeto.Imagen}" class="card-img-top" alt="${objeto.Nombre}">
-                        </a>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">${objeto.Nombre}</h5>
-                            <p><strong>Costo:</strong> ${objeto.Costo}</p>
-                            <a href="/detalle_objeto?id=${objeto.id_item}" class="btn btn-primary">Ver Detalles</a>
-                            <button class="btn btn-warning mt-2" onclick="editarObjeto(${objeto.id_item}, '${objeto.Nombre}', '${objeto.Imagen}', '${objeto.Costo}', '${objeto.Descripcion}')">✏️ Editar</button>
-                            <button class="btn btn-danger mt-2" onclick="eliminarObjeto(${objeto.id_item})">🗑️ Eliminar</button>
-                        </div>
-                    </div>
-                </div>`;
-                container.innerHTML += objetoCard;
-            });
-
+            listaObjetos = await response.json(); // Guardamos los objetos en la variable global
+            mostrarObjetos(listaObjetos); // Mostramos todos los objetos
         } catch (error) {
             console.error("Error al cargar objetos:", error);
         }
     }
+
+    function mostrarObjetos(objetos) {
+        const container = document.getElementById("objetos-container");
+        container.innerHTML = ""; // Limpiar la lista antes de renderizar
+
+        objetos.forEach(objeto => {
+            const objetoCard = `
+            <div class="col-md-3 objeto-card">
+                <div class="card bg-secondary text-white mb-3">
+                    <a href="/detalle_objeto?id=${objeto.id_item}">
+                        <img src="${objeto.Imagen}" class="card-img-top" alt="${objeto.Nombre}">
+                    </a>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">${objeto.Nombre}</h5>
+                        <p><strong>Costo:</strong> ${objeto.Costo}</p>
+                        <a href="/detalle_objeto?id=${objeto.id_item}" class="btn btn-primary">Ver Detalles</a>
+                        <button class="btn btn-warning mt-2" onclick="editarObjeto(${objeto.id_item}, '${objeto.Nombre}', '${objeto.Imagen}', '${objeto.Costo}', '${objeto.Descripcion}')">✏️ Editar</button>
+                        <button class="btn btn-danger mt-2" onclick="eliminarObjeto(${objeto.id_item})">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            </div>`;
+            container.innerHTML += objetoCard;
+        });
+    }
+
+    function filtrarObjetos() {
+    let termino = document.getElementById("searchBar").value.toLowerCase();
+    
+    // Filtrar la lista de objetos almacenada en memoria (sin hacer otra petición al servidor)
+    let objetosFiltrados = listaObjetos.filter(objeto =>
+        objeto.Nombre.toLowerCase().includes(termino)
+    );
+
+    mostrarObjetos(objetosFiltrados); // Actualizar la lista mostrada
+}
 
 
     function agregarObjeto() {
@@ -135,40 +156,33 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ Nombre: nombre, Imagen: imagen, Costo: costo, Descripcion: descripcion })
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Objeto agregado correctamente");
-                        document.getElementById("objetoForm").reset();
-                        let modal = bootstrap.Modal.getInstance(document.getElementById('addObjetoModal'));
-                        if (modal) modal.hide();
-                        cargarObjetos();
-                    } else {
-                        alert("Error al agregar objeto: " + data.error);
-                    }
-                })
-                .catch(error => console.error("Error al agregar objeto:", error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("✅ Objeto agregado correctamente");
+                    document.getElementById("objetoForm").reset();
+                    bootstrap.Modal.getInstance(document.getElementById('addObjetoModal')).hide();
+                    cargarObjetos(); // Recargar objetos
+                } else {
+                    alert("❌ Error al agregar objeto: " + data.error);
+                }
+            })
+            .catch(error => console.error("❌ Error al agregar objeto:", error));
         } else {
-            alert("Todos los campos son obligatorios");
+            alert("⚠️ Todos los campos son obligatorios");
         }
     }
 
-
     function editarObjeto(id, nombre, imagen, costo, descripcion) {
-    console.log("Datos recibidos para edición:", { id, nombre, imagen, costo, descripcion }); // Debugging
+        document.getElementById("editObjetoId").value = id;
+        document.getElementById("editObjetoNombre").value = nombre;
+        document.getElementById("editObjetoImagen").value = imagen;
+        document.getElementById("editObjetoCosto").value = costo;
+        document.getElementById("editObjetoDescripcion").value = descripcion || "";
 
-    document.getElementById("editObjetoId").value = id;
-    document.getElementById("editObjetoNombre").value = nombre;
-    document.getElementById("editObjetoImagen").value = imagen;
-    document.getElementById("editObjetoCosto").value = costo;
-    document.getElementById("editObjetoDescripcion").value = descripcion || ""; // Evita undefined
-
-    let editModal = new bootstrap.Modal(document.getElementById('editObjetoModal'));
-    editModal.show();
-}
-
-
-
+        let editModal = new bootstrap.Modal(document.getElementById('editObjetoModal'));
+        editModal.show();
+    }
 
     function guardarEdicionObjeto() {
         let id = document.getElementById("editObjetoId").value;
@@ -181,49 +195,47 @@
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + getCookie("auth_token") // Asegurar autenticación
+                "Authorization": "Bearer " + getCookie("auth_token")
             },
             body: JSON.stringify({ id, Nombre: nombre, Imagen: imagen, Costo: costo, Descripcion: descripcion })
-        }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Objeto actualizado correctamente");
-                    let editModal = bootstrap.Modal.getInstance(document.getElementById('editObjetoModal'));
-                    editModal.hide();
-                    cargarObjetos();
-                } else {
-                    alert("Error al actualizar objeto: " + data.error);
-                }
-            }).catch(error => console.error("Error al actualizar objeto:", error));
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Objeto actualizado correctamente");
+                bootstrap.Modal.getInstance(document.getElementById('editObjetoModal')).hide();
+                cargarObjetos();
+            } else {
+                alert("❌ Error al actualizar objeto: " + data.error);
+            }
+        })
+        .catch(error => console.error("❌ Error al actualizar objeto:", error));
     }
-
 
     function eliminarObjeto(id) {
-    if (!confirm("¿Estás seguro de que deseas eliminar este objeto?")) {
-        return;
+        if (!confirm("¿Estás seguro de que deseas eliminar este objeto?")) {
+            return;
+        }
+
+        fetch(`/api/api.php?resource=objetos&id=${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": "Bearer " + getCookie("auth_token"),
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Objeto eliminado correctamente");
+                cargarObjetos();
+            } else {
+                alert("❌ Error al eliminar: " + data.error);
+            }
+        })
+        .catch(error => console.error("❌ Error en la eliminación:", error));
     }
 
-    fetch(`/api/api.php?resource=objetos&id=${id}`, {
-        method: 'DELETE',
-        headers: {
-            "Authorization": "Bearer " + getCookie("auth_token"), // Para autenticación
-            "Content-Type": "application/json"
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("✅ Objeto eliminado correctamente");
-            cargarObjetos(); // Recargar la lista de objetos
-        } else {
-            alert("❌ Error al eliminar: " + data.error);
-        }
-    })
-    .catch(error => console.error("❌ Error en la eliminación:", error));
-}
-
-
-    // Función para obtener el valor de una cookie
     function getCookie(name) {
         let cookieArr = document.cookie.split(";");
         for (let i = 0; i < cookieArr.length; i++) {
@@ -234,8 +246,7 @@
         }
         return null;
     }
-
-
 </script>
+
 
 {% endblock %}
