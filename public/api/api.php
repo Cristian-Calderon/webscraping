@@ -121,11 +121,11 @@ function handleHeroes($method, $id, $pdo)
 function handleObjetos($method, $id, $pdo)
 {
     switch ($method) {
-        case 'GET': // Obtener objetos y sus descripciones
+        case 'GET': // Obtener un objeto con su descripción
             if ($id) {
                 $stmt = $pdo->prepare("
-                    SELECT o.id_item, o.Nombre, d.Imagen, d.Costo, d.Descripcion 
-                    FROM objetos o 
+                    SELECT o.id_item, o.Nombre, d.Imagen, d.Costo, d.Descripcion
+                    FROM objetos o
                     LEFT JOIN objetos_descripcion d ON o.id_item = d.id_item
                     WHERE o.id_item = ?
                 ");
@@ -137,50 +137,28 @@ function handleObjetos($method, $id, $pdo)
                     return;
                 }
 
+                // Si la descripción es `null`, reemplazar con string vacío
+                $objeto['Descripcion'] = $objeto['Descripcion'] ?? "";
+
                 echo json_encode($objeto);
             } else {
-                // Obtener todos los objetos con su imagen
+                // Obtener todos los objetos con imagen y costo
                 $stmt = $pdo->query("
-                    SELECT o.id_item, o.Nombre, d.Imagen 
-                    FROM objetos o 
+                    SELECT o.id_item, o.Nombre, d.Imagen, d.Costo, d.Descripcion
+                    FROM objetos o
                     LEFT JOIN objetos_descripcion d ON o.id_item = d.id_item
                 ");
                 echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
             }
             break;
 
-        case 'POST': // Crear un nuevo objeto
-            verifyToken();
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (!isset($data['Nombre'], $data['Link'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
-                echo json_encode(["error" => "Faltan datos para crear el objeto."]);
-                return;
-            }
 
-            try {
-                $pdo->beginTransaction();
-
-                // Insertar Objeto
-                $stmt = $pdo->prepare("INSERT INTO objetos (Nombre, Link) VALUES (?, ?)");
-                $stmt->execute([$data['Nombre'], $data['Link']]);
-                $id_item = $pdo->lastInsertId();
-
-                // Insertar Descripción del Objeto
-                $stmt = $pdo->prepare("INSERT INTO objetos_descripcion (id_item, Nombre, Imagen, Costo, Descripcion) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$id_item, $data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion']]);
-
-                $pdo->commit();
-                echo json_encode(["success" => "Objeto agregado", "id_item" => $id_item]);
-            } catch (PDOException $e) {
-                $pdo->rollBack();
-                echo json_encode(["error" => "Error al agregar objeto", "message" => $e->getMessage()]);
-            }
-            break;
 
         case 'PUT': // Editar objeto y su descripción
             verifyToken();
             $data = json_decode(file_get_contents("php://input"), true);
-            if (!isset($data['id'], $data['Nombre'], $data['Link'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
+
+            if (!isset($data['id'], $data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
                 echo json_encode(["error" => "Faltan datos para actualizar el objeto."]);
                 return;
             }
@@ -188,11 +166,11 @@ function handleObjetos($method, $id, $pdo)
             try {
                 $pdo->beginTransaction();
 
-                // Actualizar Objeto
-                $stmt = $pdo->prepare("UPDATE objetos SET Nombre = ?, Link = ? WHERE id_item = ?");
-                $stmt->execute([$data['Nombre'], $data['Link'], $data['id']]);
+                // Actualizar en la tabla objetos
+                $stmt = $pdo->prepare("UPDATE objetos SET Nombre = ? WHERE id_item = ?");
+                $stmt->execute([$data['Nombre'], $data['id']]);
 
-                // Actualizar Descripción del Objeto
+                // Actualizar en la tabla objetos_descripcion
                 $stmt = $pdo->prepare("UPDATE objetos_descripcion SET Nombre = ?, Imagen = ?, Costo = ?, Descripcion = ? WHERE id_item = ?");
                 $stmt->execute([$data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion'], $data['id']]);
 
@@ -204,8 +182,42 @@ function handleObjetos($method, $id, $pdo)
             }
             break;
 
-        case 'DELETE': // Eliminar objeto y su descripción
+
+        case 'POST': // Crear un nuevo objeto en ambas tablas
             verifyToken();
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (!isset($data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion'])) {
+                echo json_encode(["error" => "Faltan datos para crear el objeto.", "datos_recibidos" => $data]);
+                return;
+            }
+
+            try {
+                $pdo->beginTransaction();
+
+                // ✅ No se incluye `id_item`, ya que es AUTO_INCREMENT
+                $stmt = $pdo->prepare("INSERT INTO objetos (Nombre) VALUES (?)");
+                $stmt->execute([$data['Nombre']]);
+                $id_item = $pdo->lastInsertId(); // Obtiene el ID generado automáticamente
+
+                // ✅ Se usa el `id_item` generado para insertar en objetos_descripcion
+                $stmt = $pdo->prepare("INSERT INTO objetos_descripcion (id_item, Nombre, Imagen, Costo, Descripcion) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$id_item, $data['Nombre'], $data['Imagen'], $data['Costo'], $data['Descripcion']]);
+
+                $pdo->commit();
+                echo json_encode(["success" => "Objeto agregado", "id_item" => $id_item]);
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                echo json_encode([
+                    "error" => "Error al agregar objeto",
+                    "message" => $e->getMessage(),
+                    "trace" => $e->getTrace()
+                ]);
+            }
+            break;
+
+        case 'DELETE': // Eliminar objeto y su descripción
+            verifyToken(); // Verifica autenticación
+
             if (!$id) {
                 echo json_encode(["error" => "ID de objeto requerido"]);
                 return;
@@ -230,9 +242,11 @@ function handleObjetos($method, $id, $pdo)
             }
             break;
 
+
+
+
         default:
             http_response_code(405);
             echo json_encode(["error" => "Método no permitido"]);
     }
 }
-

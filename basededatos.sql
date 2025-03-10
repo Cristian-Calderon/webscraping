@@ -146,6 +146,26 @@ CREATE TABLE objetos (
     link_pagina TEXT
 );
 
+-- hay cambiar algunas cosas:
+-- Eliminar la clave foránea en objetos_descripcion
+-- Como id_item en objetos está referenciado en objetos_descripcion, primero debemos eliminar la clave foránea antes de modificar la estructura de la tabla.
+-- Ejecuta este comando para ver el nombre de la clave foránea:
+SHOW CREATE TABLE objetos_descripcion;
+
+-- quitamos la foreign key de la tabla objetos_descripcion
+ALTER TABLE objetos_descripcion DROP FOREIGN KEY objetos_descripcion_ibfk_1;
+
+-- Eliminar la clave primaria en objetos
+ALTER TABLE objetos DROP PRIMARY KEY;
+
+-- Modificar id_item para agregar AUTO_INCREMENT y volver a establecerla como PRIMARY KEY
+ALTER TABLE objetos MODIFY id_item INT AUTO_INCREMENT PRIMARY KEY;
+
+-- Volver a agregar la clave foránea en objetos_descripcion
+ALTER TABLE objetos_descripcion ADD CONSTRAINT fk_objetos FOREIGN KEY (id_item) REFERENCES objetos(id_item) ON DELETE CASCADE;
+
+
+
 CREATE TABLE objetos_descripcion (
     id_objeto INT AUTO_INCREMENT PRIMARY KEY,
     id_item INT NOT NULL,
