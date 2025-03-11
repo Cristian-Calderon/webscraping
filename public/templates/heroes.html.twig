@@ -6,6 +6,15 @@
 
 <div class="container mt-5">
     <h1 class="text-center">Lista de Héroes</h1>
+      <!-- Botón para ir a la página de creación -->
+      <a href="/crear_heroe" class="btn btn-success mb-3">➕ Crear Héroe</a>
+    
+    <!-- Barra de búsqueda -->
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" id="search-heroes" placeholder="Buscar héroe...">
+        <button class="btn btn-outline-secondary" type="button" onclick="cargarHeroes()">🔍 Buscar</button>
+    </div>
+
     <div class="row mt-4" id="heroes-container"></div>
 </div>
 
@@ -18,29 +27,44 @@
         try {
             const response = await fetch("/api/api.php?resource=heroes");
             const heroes = await response.json();
-            const container = document.getElementById("heroes-container");
-            container.innerHTML = "";
-
-            heroes.forEach(heroe => {
-                const heroCard = `
-                    <div class="col-md-3">
-                        <div class="card bg-secondary text-white mb-3">
-                            <a href="/detalle_heroe?id=${heroe.id_heroe}">
-                                <img src="${heroe.link_img}" class="card-img-top" alt="${heroe.nombre}">
-                            </a>
-                            <div class="card-body text-center">
-                                <h5 class="card-title">${heroe.nombre}</h5>
-                                <a href="/detalle_heroe?id=${heroe.id_heroe}" class="btn btn-primary">Ver Detalles</a>
-                            </div>
-                        </div>
-                    </div>`;
-                container.innerHTML += heroCard;
-            });
-
+            mostrarHeroes(heroes);
         } catch (error) {
             console.error("Error al cargar héroes:", error);
         }
     }
+
+    function mostrarHeroes(heroes) {
+        const container = document.getElementById("heroes-container");
+        container.innerHTML = "";
+
+        heroes.forEach(heroe => {
+            const heroCard = `
+                <div class="col-md-3 hero-card" data-nombre="${heroe.nombre.toLowerCase()}">
+                    <div class="card bg-secondary text-white mb-3">
+                        <a href="/detalle_heroe?id=${heroe.id_heroe}">
+                            <img src="${heroe.link_img}" class="card-img-top" alt="${heroe.nombre}">
+                        </a>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">${heroe.nombre}</h5>
+                            <a href="/detalle_heroe?id=${heroe.id_heroe}" class="btn btn-primary">Ver Detalles</a>
+                        </div>
+                    </div>
+                </div>`;
+            container.innerHTML += heroCard;
+        });
+    }
+
+    document.getElementById("search-heroes").addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
+        document.querySelectorAll(".hero-card").forEach(card => {
+            const nombre = card.getAttribute("data-nombre");
+            if (nombre.includes(searchTerm)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
 </script>
 
 {% endblock %}

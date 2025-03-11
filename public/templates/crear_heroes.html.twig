@@ -1,0 +1,158 @@
+{% extends "base_crear.html.twig" %}
+
+{% block title %}Crear Héroe{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center">Crear Nuevo Héroe</h1>
+
+    <form id="crearHeroeForm">
+        <!-- Datos del Héroe -->
+        <h4>Datos del Héroe</h4>
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del Héroe</label>
+            <input type="text" class="form-control" id="nombre" required>
+        </div>
+        <div class="mb-3">
+            <label for="link_img" class="form-label">Imagen URL</label>
+            <input type="text" class="form-control" id="link_img" required>
+        </div>
+
+        <!-- Perfil del Héroe -->
+        <h4>Perfil del Héroe</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="popularidad" class="form-label">Popularidad</label>
+                <input type="text" class="form-control" id="popularidad" required>
+            </div>
+            <div class="col-md-6">
+                <label for="porcentaje_victoria" class="form-label">Porcentaje de Victoria</label>
+                <input type="text" class="form-control" id="porcentaje_victoria" required>
+            </div>
+            <div class="col-md-6">
+                <label for="resultado" class="form-label">Resultado</label>
+                <input type="text" class="form-control" id="resultado" required>
+            </div>
+            <div class="col-md-6">
+                <label for="fuerza" class="form-label">Fuerza</label>
+                <input type="text" class="form-control" id="fuerza" required>
+            </div>
+            <div class="col-md-6">
+                <label for="agilidad" class="form-label">Agilidad</label>
+                <input type="text" class="form-control" id="agilidad" required>
+            </div>
+            <div class="col-md-6">
+                <label for="inteligencia" class="form-label">Inteligencia</label>
+                <input type="text" class="form-control" id="inteligencia" required>
+            </div>
+            <div class="col-md-6">
+                <label for="velocidad_movimiento" class="form-label">Velocidad de Movimiento</label>
+                <input type="text" class="form-control" id="velocidad_movimiento" required>
+            </div>
+            <div class="col-md-6">
+                <label for="rango_vision" class="form-label">Rango de Visión</label>
+                <input type="text" class="form-control" id="rango_vision" required>
+            </div>
+            <div class="col-md-6">
+                <label for="armadura" class="form-label">Armadura</label>
+                <input type="text" class="form-control" id="armadura" required>
+            </div>
+            <div class="col-md-6">
+                <label for="tiempo_ataque_base" class="form-label">Tiempo de Ataque Base</label>
+                <input type="text" class="form-control" id="tiempo_ataque_base" required>
+            </div>
+            <div class="col-md-6">
+                <label for="damage" class="form-label">Daño</label>
+                <input type="text" class="form-control" id="damage" required>
+            </div>
+            <div class="col-md-6">
+                <label for="punto_ataque" class="form-label">Punto de Ataque</label>
+                <input type="text" class="form-control" id="punto_ataque" required>
+            </div>
+        </div>
+
+        <!-- Habilidades -->
+        <h4>Habilidades</h4>
+        <div id="habilidades-container"></div>
+        <button type="button" class="btn btn-secondary mb-3" onclick="agregarHabilidad()">➕ Agregar Habilidad</button>
+
+        <button type="submit" class="btn btn-success">Guardar Héroe</button>
+    </form>
+</div>
+
+<script>
+    // Función para agregar nuevas habilidades dinámicamente al formulario
+    function agregarHabilidad() {
+        const container = document.getElementById("habilidades-container");
+
+        const habilidadHTML = `
+            <div class="habilidad-row border p-3 mb-2">
+                <label>Nombre de la Habilidad</label>
+                <input type="text" class="form-control mb-2 nombre-habilidad" placeholder="Ej: Golpe Fuerte" required>
+                
+                <label>Descripción</label>
+                <input type="text" class="form-control mb-2 descripcion-habilidad" placeholder="Ej: Aumenta el daño" required>
+                
+                <label>Imagen URL</label>
+                <input type="text" class="form-control mb-2 imagen-habilidad" placeholder="Ej: https://link_imagen.com" required>
+                
+                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">❌ Quitar</button>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", habilidadHTML);
+    }
+
+    // Manejo del envío del formulario
+    document.getElementById("crearHeroeForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let habilidades = [];
+        document.querySelectorAll(".habilidad-row").forEach(row => {
+            habilidades.push({
+                nombre_habilidad: row.querySelector(".nombre-habilidad").value,
+                descripcion: row.querySelector(".descripcion-habilidad").value,
+                imagen: row.querySelector(".imagen-habilidad").value
+            });
+        });
+
+        const heroData = {
+            nombre: document.getElementById("nombre").value,
+            link_img: document.getElementById("link_img").value,
+            perfil: {
+                popularidad: document.getElementById("popularidad").value,
+                porcentaje_victoria: document.getElementById("porcentaje_victoria").value,
+                resultado: document.getElementById("resultado").value,
+                fuerza: document.getElementById("fuerza").value,
+                agilidad: document.getElementById("agilidad").value,
+                inteligencia: document.getElementById("inteligencia").value,
+                velocidad_movimiento: document.getElementById("velocidad_movimiento").value,
+                rango_vision: document.getElementById("rango_vision").value,
+                armadura: document.getElementById("armadura").value,
+                tiempo_ataque_base: document.getElementById("tiempo_ataque_base").value,
+                damage: document.getElementById("damage").value,
+                punto_ataque: document.getElementById("punto_ataque").value
+            },
+            habilidades: habilidades
+        };
+
+        fetch("/api/api.php?resource=heroes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(heroData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Héroe creado correctamente");
+                window.location.href = "/heroes";
+            } else {
+                alert("Error al crear héroe: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error al crear héroe:", error));
+    });
+</script>
+
+
+{% endblock %}

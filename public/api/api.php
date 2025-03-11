@@ -36,8 +36,7 @@ switch ($resource) {
 }
 
 // ✅ Función para manejar Héroes (Crear, Leer, Editar, Eliminar)
-function handleHeroes($method, $id, $pdo)
-{
+function handleHeroes($method, $id, $pdo) {
     switch ($method) {
         case 'GET': // Obtener héroe y sus datos relacionados
             if ($id) {
@@ -62,60 +61,77 @@ function handleHeroes($method, $id, $pdo)
 
                 echo json_encode($heroe);
             } else {
-                // Obtener todos los héroes
                 $stmt = $pdo->query("SELECT * FROM heroes");
                 echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
             }
             break;
 
-        case 'POST': // Crear un nuevo héroe con habilidades y perfil
-            verifyToken();
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (!isset($data['nombre'], $data['link_img'], $data['link_page'])) {
-                echo json_encode(["error" => "Faltan datos para crear el héroe."]);
-                return;
-            }
-
-            // Insertar Héroe
-            $stmt = $pdo->prepare("INSERT INTO heroes (nombre, link_img, link_page) VALUES (?, ?, ?)");
-            $stmt->execute([$data['nombre'], $data['link_img'], $data['link_page']]);
-            $id_heroe = $pdo->lastInsertId();
-
-            echo json_encode(["success" => "Héroe agregado", "id_heroe" => $id_heroe]);
-            break;
-
-        case 'PUT': // Editar héroe
-            verifyToken();
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (!isset($data['id'], $data['nombre'], $data['link_img'], $data['link_page'])) {
-                echo json_encode(["error" => "Faltan datos para actualizar el héroe."]);
-                return;
-            }
-
-            $stmt = $pdo->prepare("UPDATE heroes SET nombre = ?, link_img = ?, link_page = ? WHERE id_heroe = ?");
-            $stmt->execute([$data['nombre'], $data['link_img'], $data['link_page'], $data['id']]);
-
-            echo json_encode(["success" => "Héroe actualizado"]);
-            break;
-
-        case 'DELETE': // Eliminar héroe
-            verifyToken();
-            if (!$id) {
-                echo json_encode(["error" => "ID de héroe requerido"]);
-                return;
-            }
-
-            $stmt = $pdo->prepare("DELETE FROM heroes WHERE id_heroe = ?");
-            $stmt->execute([$id]);
-
-            echo json_encode(["success" => "Héroe eliminado"]);
-            break;
+            case 'POST': // Crear un nuevo héroe con habilidades y perfil
+                verifyToken();
+                $data = json_decode(file_get_contents("php://input"), true);
+            
+                if (!isset($data['nombre'], $data['link_img'], $data['perfil'], $data['habilidades'])) {
+                    echo json_encode(["error" => "Faltan datos para crear el héroe.", "datos_recibidos" => $data]);
+                    return;
+                }
+            
+                try {
+                    $pdo->beginTransaction();
+            
+                    // Insertar el héroe en la base de datos
+                    $stmt = $pdo->prepare("INSERT INTO heroes (nombre, link_img) VALUES (?, ?)");
+                    $stmt->execute([$data['nombre'], $data['link_img']]);
+                    $id_heroe = $pdo->lastInsertId(); // Obtener el ID generado
+            
+                    if (!$id_heroe) {
+                        throw new Exception("Error al obtener el ID del héroe.");
+                    }
+            
+                    // Insertar perfil del héroe
+                    $perfil = $data['perfil'];
+                    $stmt = $pdo->prepare("
+                        INSERT INTO perfil_heroes (id_heroe, popularidad, porcentaje_victoria, resultado, 
+                        fuerza, agilidad, inteligencia, velocidad_movimiento, rango_vision, armadura, 
+                        tiempo_ataque_base, damage, punto_ataque)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ");
+            
+                    $stmt->execute([
+                        $id_heroe,
+                        $perfil['popularidad'], $perfil['porcentaje_victoria'], $perfil['resultado'],
+                        $perfil['fuerza'], $perfil['agilidad'], $perfil['inteligencia'],
+                        $perfil['velocidad_movimiento'], $perfil['rango_vision'], $perfil['armadura'],
+                        $perfil['tiempo_ataque_base'], $perfil['damage'], $perfil['punto_ataque']
+                    ]);
+            
+                    // Insertar habilidades
+                    foreach ($data['habilidades'] as $habilidad) {
+                        if (!isset($habilidad['nombre_habilidad'], $habilidad['descripcion'], $habilidad['imagen'])) {
+                            throw new Exception("Faltan datos en una habilidad.");
+                        }
+                        $stmt = $pdo->prepare("INSERT INTO habilidades (id_heroe, nombre_habilidad, descripcion, imagen) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$id_heroe, $habilidad['nombre_habilidad'], $habilidad['descripcion'], $habilidad['imagen']]);
+                    }
+            
+                    $pdo->commit();
+                    echo json_encode(["success" => "Héroe agregado correctamente", "id_heroe" => $id_heroe]);
+            
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    echo json_encode(["error" => "Error en la base de datos", "message" => $e->getMessage()]);
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    echo json_encode(["error" => "Error en la lógica", "message" => $e->getMessage()]);
+                }
+                break;
+            
 
         default:
             http_response_code(405);
             echo json_encode(["error" => "Método no permitido"]);
     }
 }
+
 
 // ✅ Función para manejar Objetos (Crear, Leer, Editar, Eliminar)
 function handleObjetos($method, $id, $pdo)

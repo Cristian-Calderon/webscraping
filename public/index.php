@@ -32,7 +32,8 @@ $routes = [
     'heroes' => 'heroes.html.twig',
     'detalle_heroe' => 'detalle_heroe.html.twig',
     'objetos' => 'objetos.html.twig',
-    'detalle_objeto' => 'detalle_objeto.html.twig'
+    'detalle_objeto' => 'detalle_objeto.html.twig',
+    'crear_heroe' => 'crear_heroes.html.twig'  // ✅ Nueva ruta añadida
 ];
 
 // 🔹 Si la ruta es "detalle_heroe", obtener información desde la API
@@ -87,7 +88,7 @@ if ($request_uri === 'detalle_objeto') {
 }
 
 // 🔹 Validación de autenticación para rutas protegidas
-if (in_array($request_uri, ['dashboard', 'admin', 'heroes'])) {
+if (in_array($request_uri, ['dashboard', 'admin', 'heroes', 'crear_heroe'])) {
     $token = $_COOKIE['auth_token'] ?? null;
     if (!$token) {
         error_log("🔴 DEBUG: Redirigiendo a login, token no presente.");
