@@ -11,7 +11,6 @@
             <img id="hero-image" class="img-fluid rounded shadow-lg" alt="Imagen del Héroe">
         </div>
         <div class="col-md-8">
-            
             <p id="hero-description" class="text-light"></p>
         </div>
     </div>
@@ -20,13 +19,20 @@
     <div class="abilities-grid" id="hero-abilities"></div>
 
     <h3 class="mt-4 text-white">Perfil del Héroe</h3>
-    <table class="table table-dark table-bordered mt-3">
-        <tbody>
-            <tr><th>Popularidad</th><td id="popularidad"></td></tr>
-            <tr><th>Porcentaje de Victoria</th><td id="porcentaje_victoria"></td></tr>
-            <tr><th>Resultado</th><td id="resultado"></td></tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-dark table-bordered mt-3">
+                <tbody>
+                    <tr><th>Popularidad</th><td id="popularidad"></td></tr>
+                    <tr><th>Porcentaje de Victoria</th><td id="porcentaje_victoria"></td></tr>
+                    <tr><th>Resultado</th><td id="resultado"></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <canvas id="heroChart" style="max-width: 100%; height: 400px;"></canvas>
+        </div>
+    </div>
 
     <div class="row mt-4">
         <div class="col-md-3">
@@ -168,7 +174,7 @@
 
             document.getElementById("hero-name").innerText = data.nombre;
             document.getElementById("hero-image").src = data.link_img;
-           
+            document.getElementById("hero-description").innerText = data.descripcion || "Sin descripción.";
 
             // Mostrar habilidades en grid
             const abilitiesContainer = document.getElementById("hero-abilities");
@@ -194,12 +200,37 @@
             document.getElementById("fuerza").innerText = data.perfil.fuerza || "N/A";
             document.getElementById("agilidad").innerText = data.perfil.agilidad || "N/A";
             document.getElementById("inteligencia").innerText = data.perfil.inteligencia || "N/A";
+            document.getElementById("damage").innerText = data.perfil.damage || "N/A";
+            document.getElementById("tiempo_ataque_base").innerText = data.perfil.tiempo_ataque_base || "N/A";
+            document.getElementById("punto_ataque").innerText = data.perfil.punto_ataque || "N/A";
+            document.getElementById("armadura").innerText = data.perfil.armadura || "N/A";
             document.getElementById("velocidad_movimiento").innerText = data.perfil.velocidad_movimiento || "N/A";
             document.getElementById("rango_vision").innerText = data.perfil.rango_vision || "N/A";
-            document.getElementById("armadura").innerText = data.perfil.armadura || "N/A";
-            document.getElementById("tiempo_ataque_base").innerText = data.perfil.tiempo_ataque_base || "N/A";
-            document.getElementById("damage").innerText = data.perfil.damage || "N/A";
-            document.getElementById("punto_ataque").innerText = data.perfil.punto_ataque || "N/A";
+
+            // Asignar valores numéricos a los resultados
+            const resultadoValor = data.perfil.resultado === 'won' ? 25 : (data.perfil.resultado === 'lost' ? 40 : 0);
+
+            // Crear gráfica de Chart.js
+            const ctx = document.getElementById('heroChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Popularidad', 'Porcentaje de Victoria', 'Resultado'],
+                    datasets: [{
+                        data: [
+                            parseFloat(data.perfil.popularidad) || 0,
+                            parseFloat(data.perfil.porcentaje_victoria) || 0,
+                            resultadoValor
+                        ],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
 
         } catch (error) {
             console.error("Error al cargar el héroe:", error);
@@ -208,7 +239,3 @@
 </script>
 
 {% endblock %}
-
-
-
-
