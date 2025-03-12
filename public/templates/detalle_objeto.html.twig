@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <h1 class="text-center">Detalles del Objeto</h1>
     
-    <div class="card mx-auto bg-secondary text-white" style="width: 30rem;">
+    <div class="card mx-auto bg-secondary text-white" style="max-width: 30rem;">
         <img id="objeto-imagen" class="card-img-top" alt="">
         <div class="card-body">
             <h5 class="card-title" id="objeto-nombre"></h5>
@@ -46,5 +46,25 @@
         }
     });
 </script>
+
+<style>
+    /* Fondo con imagen */
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    .card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+    }
+</style>
 
 {% endblock %}

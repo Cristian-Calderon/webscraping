@@ -6,15 +6,12 @@
 
 <div class="container mt-5">
     <h1 class="text-center">Lista de Objetos</h1>
-    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addObjetoModal">➕ Agregar
-        Objeto</button>
-        <div class="mb-3">
-            <input type="text" class="form-control" id="searchBar" placeholder="🔎 Buscar objeto..." onkeyup="filtrarObjetos()">
-        </div>
+    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addObjetoModal">➕ Agregar Objeto</button>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="searchBar" placeholder="🔎 Buscar objeto..." onkeyup="filtrarObjetos()">
+    </div>
     <div class="row mt-4" id="objetos-container"></div>
-    <!-- Barra de búsqueda -->
 </div>
-
 
 <!-- Modal para agregar objeto -->
 <div class="modal fade" id="addObjetoModal" tabindex="-1" aria-labelledby="addObjetoModalLabel" aria-hidden="true">
@@ -88,8 +85,16 @@
         </div>
     </div>
 </div>
-
-
+<style>
+    /* Fondo con imagen */
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+    </style>
 
 <script>
     let listaObjetos = []; // Variable global para almacenar objetos
@@ -114,7 +119,7 @@
 
         objetos.forEach(objeto => {
             const objetoCard = `
-            <div class="col-md-3 objeto-card">
+            <div class="col-md-3 objeto-card animate__animated animate__fadeIn">
                 <div class="card bg-secondary text-white mb-3">
                     <a href="/detalle_objeto?id=${objeto.id_item}">
                         <img src="${objeto.Imagen}" class="card-img-top" alt="${objeto.Nombre}">
@@ -133,16 +138,15 @@
     }
 
     function filtrarObjetos() {
-    let termino = document.getElementById("searchBar").value.toLowerCase();
-    
-    // Filtrar la lista de objetos almacenada en memoria (sin hacer otra petición al servidor)
-    let objetosFiltrados = listaObjetos.filter(objeto =>
-        objeto.Nombre.toLowerCase().includes(termino)
-    );
+        let termino = document.getElementById("searchBar").value.toLowerCase();
+        
+        // Filtrar la lista de objetos almacenada en memoria (sin hacer otra petición al servidor)
+        let objetosFiltrados = listaObjetos.filter(objeto =>
+            objeto.Nombre.toLowerCase().includes(termino)
+        );
 
-    mostrarObjetos(objetosFiltrados); // Actualizar la lista mostrada
-}
-
+        mostrarObjetos(objetosFiltrados); // Actualizar la lista mostrada
+    }
 
     function agregarObjeto() {
         let nombre = document.getElementById("objetoNombre").value;
@@ -248,5 +252,15 @@
     }
 </script>
 
+<style>
+    .objeto-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .objeto-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+    }
+</style>
 
 {% endblock %}
