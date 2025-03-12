@@ -5,75 +5,75 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h1 class="text-center">Crear Nuevo Héroe</h1>
+    <h1 class="text-center text-white">Crear Nuevo Héroe</h1>
 
-    <form id="crearHeroeForm">
+    <form id="crearHeroeForm" class="bg-dark p-4 rounded shadow-lg">
         <!-- Datos del Héroe -->
-        <h4>Datos del Héroe</h4>
+        <h4 class="text-white">Datos del Héroe</h4>
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre del Héroe</label>
+            <label for="nombre" class="form-label text-white">Nombre del Héroe</label>
             <input type="text" class="form-control" id="nombre" required>
         </div>
         <div class="mb-3">
-            <label for="link_img" class="form-label">Imagen URL</label>
+            <label for="link_img" class="form-label text-white">Imagen URL</label>
             <input type="text" class="form-control" id="link_img" required>
         </div>
 
         <!-- Perfil del Héroe -->
-        <h4>Perfil del Héroe</h4>
+        <h4 class="text-white">Perfil del Héroe</h4>
         <div class="row">
             <div class="col-md-6">
-                <label for="popularidad" class="form-label">Popularidad</label>
+                <label for="popularidad" class="form-label text-white">Popularidad</label>
                 <input type="text" class="form-control" id="popularidad" required>
             </div>
             <div class="col-md-6">
-                <label for="porcentaje_victoria" class="form-label">Porcentaje de Victoria</label>
+                <label for="porcentaje_victoria" class="form-label text-white">Porcentaje de Victoria</label>
                 <input type="text" class="form-control" id="porcentaje_victoria" required>
             </div>
             <div class="col-md-6">
-                <label for="resultado" class="form-label">Resultado</label>
+                <label for="resultado" class="form-label text-white">Resultado</label>
                 <input type="text" class="form-control" id="resultado" required>
             </div>
             <div class="col-md-6">
-                <label for="fuerza" class="form-label">Fuerza</label>
+                <label for="fuerza" class="form-label text-white">Fuerza</label>
                 <input type="text" class="form-control" id="fuerza" required>
             </div>
             <div class="col-md-6">
-                <label for="agilidad" class="form-label">Agilidad</label>
+                <label for="agilidad" class="form-label text-white">Agilidad</label>
                 <input type="text" class="form-control" id="agilidad" required>
             </div>
             <div class="col-md-6">
-                <label for="inteligencia" class="form-label">Inteligencia</label>
+                <label for="inteligencia" class="form-label text-white">Inteligencia</label>
                 <input type="text" class="form-control" id="inteligencia" required>
             </div>
             <div class="col-md-6">
-                <label for="velocidad_movimiento" class="form-label">Velocidad de Movimiento</label>
+                <label for="velocidad_movimiento" class="form-label text-white">Velocidad de Movimiento</label>
                 <input type="text" class="form-control" id="velocidad_movimiento" required>
             </div>
             <div class="col-md-6">
-                <label for="rango_vision" class="form-label">Rango de Visión</label>
+                <label for="rango_vision" class="form-label text-white">Rango de Visión</label>
                 <input type="text" class="form-control" id="rango_vision" required>
             </div>
             <div class="col-md-6">
-                <label for="armadura" class="form-label">Armadura</label>
+                <label for="armadura" class="form-label text-white">Armadura</label>
                 <input type="text" class="form-control" id="armadura" required>
             </div>
             <div class="col-md-6">
-                <label for="tiempo_ataque_base" class="form-label">Tiempo de Ataque Base</label>
+                <label for="tiempo_ataque_base" class="form-label text-white">Tiempo de Ataque Base</label>
                 <input type="text" class="form-control" id="tiempo_ataque_base" required>
             </div>
             <div class="col-md-6">
-                <label for="damage" class="form-label">Daño</label>
+                <label for="damage" class="form-label text-white">Daño</label>
                 <input type="text" class="form-control" id="damage" required>
             </div>
             <div class="col-md-6">
-                <label for="punto_ataque" class="form-label">Punto de Ataque</label>
+                <label for="punto_ataque" class="form-label text-white">Punto de Ataque</label>
                 <input type="text" class="form-control" id="punto_ataque" required>
             </div>
         </div>
 
         <!-- Habilidades -->
-        <h4>Habilidades</h4>
+        <h4 class="text-white mt-4">Habilidades</h4>
         <div id="habilidades-container"></div>
         <button type="button" class="btn btn-secondary mb-3" onclick="agregarHabilidad()">➕ Agregar Habilidad</button>
 
@@ -87,14 +87,14 @@
         const container = document.getElementById("habilidades-container");
 
         const habilidadHTML = `
-            <div class="habilidad-row border p-3 mb-2">
-                <label>Nombre de la Habilidad</label>
+            <div class="habilidad-row border p-3 mb-2 bg-secondary rounded">
+                <label class="text-white">Nombre de la Habilidad</label>
                 <input type="text" class="form-control mb-2 nombre-habilidad" placeholder="Ej: Golpe Fuerte" required>
                 
-                <label>Descripción</label>
+                <label class="text-white">Descripción</label>
                 <input type="text" class="form-control mb-2 descripcion-habilidad" placeholder="Ej: Aumenta el daño" required>
                 
-                <label>Imagen URL</label>
+                <label class="text-white">Imagen URL</label>
                 <input type="text" class="form-control mb-2 imagen-habilidad" placeholder="Ej: https://link_imagen.com" required>
                 
                 <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">❌ Quitar</button>
@@ -154,5 +154,22 @@
     });
 </script>
 
+<style>
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    .form-label {
+        color: white;
+    }
+
+    .habilidad-row {
+        background: rgba(0, 0, 0, 0.85);
+    }
+</style>
 
 {% endblock %}

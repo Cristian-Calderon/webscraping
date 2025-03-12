@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h1 class="text-center">Lista de Objetos</h1>
+    <h1 class="text-center text-white">Lista de Objetos</h1>
     <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addObjetoModal">➕ Agregar Objeto</button>
     <div class="mb-3">
         <input type="text" class="form-control" id="searchBar" placeholder="🔎 Buscar objeto..." onkeyup="filtrarObjetos()">
@@ -16,27 +16,27 @@
 <!-- Modal para agregar objeto -->
 <div class="modal fade" id="addObjetoModal" tabindex="-1" aria-labelledby="addObjetoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="addObjetoModalLabel">Agregar Nuevo Objeto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="objetoForm">
                     <div class="mb-3">
-                        <label for="objetoNombre" class="form-label">Nombre del Objeto</label>
+                        <label for="objetoNombre" class="form-label text-white">Nombre del Objeto</label>
                         <input type="text" class="form-control" id="objetoNombre" required>
                     </div>
                     <div class="mb-3">
-                        <label for="objetoImagen" class="form-label">URL de la Imagen</label>
+                        <label for="objetoImagen" class="form-label text-white">URL de la Imagen</label>
                         <input type="text" class="form-control" id="objetoImagen" required>
                     </div>
                     <div class="mb-3">
-                        <label for="objetoCosto" class="form-label">Costo</label>
+                        <label for="objetoCosto" class="form-label text-white">Costo</label>
                         <input type="text" class="form-control" id="objetoCosto" required>
                     </div>
                     <div class="mb-3">
-                        <label for="objetoDescripcion" class="form-label">Descripción</label>
+                        <label for="objetoDescripcion" class="form-label text-white">Descripción</label>
                         <textarea class="form-control" id="objetoDescripcion" rows="3" required></textarea>
                     </div>
                 </form>
@@ -52,28 +52,28 @@
 <!-- Modal para editar objeto -->
 <div class="modal fade" id="editObjetoModal" tabindex="-1" aria-labelledby="editObjetoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="editObjetoModalLabel">Editar Objeto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="editObjetoForm">
                     <input type="hidden" id="editObjetoId">
                     <div class="mb-3">
-                        <label for="editObjetoNombre" class="form-label">Nombre del Objeto</label>
+                        <label for="editObjetoNombre" class="form-label text-white">Nombre del Objeto</label>
                         <input type="text" class="form-control" id="editObjetoNombre" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editObjetoImagen" class="form-label">URL de la Imagen</label>
+                        <label for="editObjetoImagen" class="form-label text-white">URL de la Imagen</label>
                         <input type="text" class="form-control" id="editObjetoImagen" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editObjetoCosto" class="form-label">Costo</label>
+                        <label for="editObjetoCosto" class="form-label text-white">Costo</label>
                         <input type="text" class="form-control" id="editObjetoCosto" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editObjetoDescripcion" class="form-label">Descripción</label>
+                        <label for="editObjetoDescripcion" class="form-label text-white">Descripción</label>
                         <textarea class="form-control" id="editObjetoDescripcion" rows="3"></textarea>
                     </div>
                 </form>
@@ -85,16 +85,6 @@
         </div>
     </div>
 </div>
-<style>
-    /* Fondo con imagen */
-    body {
-        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        color: white;
-    }
-    </style>
 
 <script>
     let listaObjetos = []; // Variable global para almacenar objetos
@@ -127,9 +117,8 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">${objeto.Nombre}</h5>
                         <p><strong>Costo:</strong> ${objeto.Costo}</p>
-                        <a href="/detalle_objeto?id=${objeto.id_item}" class="btn btn-primary">Ver Detalles</a>
-                        <button class="btn btn-warning mt-2" onclick="editarObjeto(${objeto.id_item}, '${objeto.Nombre}', '${objeto.Imagen}', '${objeto.Costo}', '${objeto.Descripcion}')">✏️ Editar</button>
-                        <button class="btn btn-danger mt-2" onclick="eliminarObjeto(${objeto.id_item})">🗑️ Eliminar</button>
+                        <button class="btn btn-outline-warning btn-sm mb-2" onclick="editarObjeto(${objeto.id_item}, '${objeto.Nombre}', '${objeto.Imagen}', '${objeto.Costo}', '${objeto.Descripcion}')">Editar</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="eliminarObjeto(${objeto.id_item})">Eliminar</button>
                     </div>
                 </div>
             </div>`;
@@ -253,6 +242,15 @@
 </script>
 
 <style>
+    /* Fondo con imagen */
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+
     .objeto-card {
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     }
@@ -260,6 +258,41 @@
     .objeto-card:hover {
         transform: scale(1.05);
         box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .modal-content {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .btn-outline-light {
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+    .btn-outline-light:hover {
+        background-color: #ffffff;
+        color: #343a40;
+    }
+
+    .btn-outline-warning {
+        border-color: #ffc107;
+        color: #ffc107;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: #343a40;
+    }
+
+    .btn-outline-danger {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: #ffffff;
     }
 </style>
 
