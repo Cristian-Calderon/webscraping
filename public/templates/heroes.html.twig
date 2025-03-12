@@ -5,9 +5,10 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h1 class="text-center">Lista de Héroes</h1>
-      <!-- Botón para ir a la página de creación -->
-      <a href="/crear_heroe" class="btn btn-success mb-3">➕ Crear Héroe</a>
+    <h1 class="text-center text-white">Lista de Héroes</h1>
+    
+    <!-- Botón para crear un nuevo héroe -->
+    <a href="/crear_heroe" class="btn btn-success mb-3">➕ Crear Héroe</a>
     
     <!-- Barra de búsqueda -->
     <div class="input-group mb-3">
@@ -15,8 +16,65 @@
         <button class="btn btn-outline-secondary" type="button" onclick="cargarHeroes()">🔍 Buscar</button>
     </div>
 
-    <div class="row mt-4" id="heroes-container"></div>
+    <div class="row mt-4 justify-content-center" id="heroes-container"></div>
 </div>
+
+<style>
+    /* Fondo con imagen */
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    /* Estilos para el hover */
+    .hero-card {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+        margin-bottom: 30px; /* Espacio entre las filas */
+    }
+
+    .hero-card:hover {
+        transform: scale(1.09); /* Efecto de zoom leve */
+    }
+
+    .hero-card img {
+        width: 100%;
+        height: auto;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 8px; /* Bordes redondeados */
+    }
+
+    .hero-card:hover img {
+        opacity: 0.7; /* Oscurece la imagen al pasar el mouse */
+    }
+
+    /* Nombre del héroe en el hover */
+    .hero-name {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: bottom 0.1s ease-in-out;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .hero-card:hover .hero-name {
+        bottom: 0; /* Hace que el nombre aparezca desde abajo */
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", async function () {
@@ -39,16 +97,11 @@
 
         heroes.forEach(heroe => {
             const heroCard = `
-                <div class="col-md-3 hero-card" data-nombre="${heroe.nombre.toLowerCase()}">
-                    <div class="card bg-secondary text-white mb-3">
-                        <a href="/detalle_heroe?id=${heroe.id_heroe}">
-                            <img src="${heroe.link_img}" class="card-img-top" alt="${heroe.nombre}">
-                        </a>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">${heroe.nombre}</h5>
-                            <a href="/detalle_heroe?id=${heroe.id_heroe}" class="btn btn-primary">Ver Detalles</a>
-                        </div>
-                    </div>
+                <div class="col-md-3 hero-card text-center" data-nombre="${heroe.nombre.toLowerCase()}">
+                    <a href="/detalle_heroe?id=${heroe.id_heroe}">
+                        <img src="${heroe.link_img}" alt="${heroe.nombre}">
+                        <div class="hero-name">${heroe.nombre}</div>
+                    </a>
                 </div>`;
             container.innerHTML += heroCard;
         });

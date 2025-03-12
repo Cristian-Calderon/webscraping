@@ -4,38 +4,146 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 id="hero-name" class="text-center"></h1>
+    <h1 id="hero-name" class="text-center display-3 text-white text-uppercase"></h1>
+    
     <div class="row">
         <div class="col-md-4">
-            <img id="hero-image" class="img-fluid rounded" alt="Imagen del Héroe">
+            <img id="hero-image" class="img-fluid rounded shadow-lg" alt="Imagen del Héroe">
         </div>
         <div class="col-md-8">
-            <h3>Descripción</h3>
-            <p id="hero-description"></p>
+            
+            <p id="hero-description" class="text-light"></p>
         </div>
     </div>
 
-    <h3 class="mt-4">Habilidades</h3>
-    <div class="row" id="hero-abilities"></div>
+    <h3 class="mt-4 text-white">Habilidades</h3>
+    <div class="abilities-grid" id="hero-abilities"></div>
 
-    <h3 class="mt-4">Perfil del Héroe</h3>
-    <table class="table table-bordered mt-3">
+    <h3 class="mt-4 text-white">Perfil del Héroe</h3>
+    <table class="table table-dark table-bordered mt-3">
         <tbody>
-            <tr><th>Popularidad</th><td id="hero-popularidad"></td></tr>
-            <tr><th>Porcentaje de Victoria</th><td id="hero-porcentaje"></td></tr>
-            <tr><th>Resultado</th><td id="hero-resultado"></td></tr>
-            <tr><th>Fuerza</th><td id="hero-fuerza"></td></tr>
-            <tr><th>Agilidad</th><td id="hero-agilidad"></td></tr>
-            <tr><th>Inteligencia</th><td id="hero-inteligencia"></td></tr>
-            <tr><th>Velocidad de Movimiento</th><td id="hero-velocidad"></td></tr>
-            <tr><th>Rango de Visión</th><td id="hero-vision"></td></tr>
-            <tr><th>Armadura</th><td id="hero-armadura"></td></tr>
-            <tr><th>Tiempo de Ataque Base</th><td id="hero-ataque_base"></td></tr>
-            <tr><th>Daño</th><td id="hero-damage"></td></tr>
-            <tr><th>Punto de Ataque</th><td id="hero-punto_ataque"></td></tr>
+            <tr><th>Popularidad</th><td id="popularidad"></td></tr>
+            <tr><th>Porcentaje de Victoria</th><td id="porcentaje_victoria"></td></tr>
+            <tr><th>Resultado</th><td id="resultado"></td></tr>
         </tbody>
     </table>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <h4 class="text-white">Atributos</h4>
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/hero_strength.png" alt="Fuerza" class="icon"><span id="fuerza"></span>
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/hero_agility.png" alt="Agilidad" class="icon"> <span id="agilidad"></span>
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/hero_intelligence.png" alt="Inteligencia" class="icon">  <span id="inteligencia"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4 class="text-white">Ataque</h4>
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_damage.png" alt="Daño" class="icon"><span id="damage"></span>
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_attack_time.png" alt="Tiempo de Ataque Base" class="icon">  <span id="tiempo_ataque_base"></span>
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_turn_rate.png" alt="Punto de Ataque" class="icon">  <span id="punto_ataque"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4 class="text-white">Defensa</h4>
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_armor.png" alt="Armadura" class="icon">  <span id="armadura"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4 class="text-white">Movilidad</h4>
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_movement_speed.png" alt="Velocidad de Movimiento" class="icon"> <span id="velocidad_movimiento"></span>
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <img src="../assets/icons/icon_vision.png" alt="Rango de Visión" class="icon">  <span id="rango_vision"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Fondo */
+    body {
+        background-image: url('https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/backgrounds/greyfade.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    /* Grid de habilidades */
+    .abilities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        padding: 20px;
+        justify-content: center;
+    }
+
+    /* Tarjeta de habilidad */
+    .ability-card {
+        background: rgba(0, 0, 0, 0.85);
+        border-radius: 10px;
+        overflow: hidden;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .ability-card img {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+    }
+
+    .ability-card h5 {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    .ability-card p {
+        font-size: 0.9rem;
+        padding: 10px;
+        text-align: justify;
+    }
+
+    /* Animación Hover */
+    .ability-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", async function () {
@@ -60,45 +168,47 @@
 
             document.getElementById("hero-name").innerText = data.nombre;
             document.getElementById("hero-image").src = data.link_img;
-            document.getElementById("hero-description").innerText = data.descripcion || "Sin descripción.";
+           
 
-            // Habilidades
+            // Mostrar habilidades en grid
             const abilitiesContainer = document.getElementById("hero-abilities");
             abilitiesContainer.innerHTML = "";
             if (data.habilidades.length > 0) {
                 data.habilidades.forEach(habilidad => {
                     abilitiesContainer.innerHTML += `
-                        <div class="col-md-4">
-                            <div class="card bg-light mb-3">
-                                <img src="${habilidad.imagen}" class="card-img-top" alt="${habilidad.nombre_habilidad}">
-                                <div class="card-body">
-                                    <h5 class="card-title">${habilidad.nombre_habilidad}</h5>
-                                    <p class="card-text">${habilidad.descripcion}</p>
-                                </div>
-                            </div>
+                        <div class="ability-card">
+                            <img src="${habilidad.imagen}" alt="${habilidad.nombre_habilidad}">
+                            <h5>${habilidad.nombre_habilidad}</h5>
+                            <p>${habilidad.descripcion}</p>
                         </div>`;
                 });
+
             } else {
                 abilitiesContainer.innerHTML = "<p>No hay habilidades registradas.</p>";
             }
 
             // Perfil del Héroe
-            document.getElementById("hero-popularidad").innerText = data.perfil.popularidad || "N/A";
-            document.getElementById("hero-porcentaje").innerText = data.perfil.porcentaje_victoria || "N/A";
-            document.getElementById("hero-resultado").innerText = data.perfil.resultado || "N/A";
-            document.getElementById("hero-fuerza").innerText = data.perfil.fuerza || "N/A";
-            document.getElementById("hero-agilidad").innerText = data.perfil.agilidad || "N/A";
-            document.getElementById("hero-inteligencia").innerText = data.perfil.inteligencia || "N/A";
-            document.getElementById("hero-velocidad").innerText = data.perfil.velocidad_movimiento || "N/A";
-            document.getElementById("hero-vision").innerText = data.perfil.rango_vision || "N/A";
-            document.getElementById("hero-armadura").innerText = data.perfil.armadura || "N/A";
-            document.getElementById("hero-ataque_base").innerText = data.perfil.tiempo_ataque_base || "N/A";
-            document.getElementById("hero-damage").innerText = data.perfil.damage || "N/A";
-            document.getElementById("hero-punto_ataque").innerText = data.perfil.punto_ataque || "N/A";
+            document.getElementById("popularidad").innerText = data.perfil.popularidad || "N/A";
+            document.getElementById("porcentaje_victoria").innerText = data.perfil.porcentaje_victoria || "N/A";
+            document.getElementById("resultado").innerText = data.perfil.resultado || "N/A";
+            document.getElementById("fuerza").innerText = data.perfil.fuerza || "N/A";
+            document.getElementById("agilidad").innerText = data.perfil.agilidad || "N/A";
+            document.getElementById("inteligencia").innerText = data.perfil.inteligencia || "N/A";
+            document.getElementById("velocidad_movimiento").innerText = data.perfil.velocidad_movimiento || "N/A";
+            document.getElementById("rango_vision").innerText = data.perfil.rango_vision || "N/A";
+            document.getElementById("armadura").innerText = data.perfil.armadura || "N/A";
+            document.getElementById("tiempo_ataque_base").innerText = data.perfil.tiempo_ataque_base || "N/A";
+            document.getElementById("damage").innerText = data.perfil.damage || "N/A";
+            document.getElementById("punto_ataque").innerText = data.perfil.punto_ataque || "N/A";
 
         } catch (error) {
             console.error("Error al cargar el héroe:", error);
         }
     });
 </script>
+
 {% endblock %}
+
+
+
+
