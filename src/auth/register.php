@@ -9,13 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Encriptar la contraseña antes de guardarla
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Depuración: Mostrar el hash generado para verificarlo
-    echo "Contraseña encriptada: " . $hashed_password . "<br>";
-
     $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
     try {
         $stmt->execute([$username, $email, $hashed_password]);
-        echo 'Registro exitoso.';
+
+        // ✅ Redirigir a la página de confirmación después del registro exitoso
+        header("Location: /confirmacion_registro");
+        exit();
     } catch (PDOException $e) {
         echo 'Error: ' . $e->getMessage();
     }

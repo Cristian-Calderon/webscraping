@@ -8,34 +8,57 @@
 </head>
 <body class="bg-light">
 
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">WebScraping</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    
-                    <li class="nav-item"><a class="nav-link active" href="/dashboard">Dashboard</a></li>
+    <!-- Navbar -->
+    {% include 'partials/navbar_login.html.twig' %}
+<!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        
+        <a class="navbar-brand px-3 py-2 text-white" href="/" style="background-color: red; border-radius: 5px;">DotaStats</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/dashboard">Dashboard</a></li>
                     
                     {% if role == 'admin' %}
                     <li class="nav-item"><a class="nav-link active" href="/admin">Administrar Usuarios</a></li>
                     {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="/heroes">Héroes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/objetos">Objetos</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link active" href="/heroes">Héroes</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/objetos">Objetos</a></li>
 
 
                     <li class="nav-item">
                         <a class="nav-link btn btn-danger text-white px-3" href="/logout.php">Cerrar sesión</a>
                     </li>
-
-                </ul>
-            </div>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav> -->
 
+<style>
+    html, body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container {
+        flex: 1; /* Hace que el contenido crezca y empuje el footer hacia abajo */
+    }
+
+    footer {
+        background: #111;
+    }
+    /* Cambia el color de los enlaces en hover */
+    /* .nav-link:hover {
+        color: red !important;
+        transition: color 0.3s ease-in-out;
+    } */
+</style>
     <!-- Contenido del dashboard -->
     <div class="container mt-5">
         <div class="row justify-content-center">

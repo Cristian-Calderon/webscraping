@@ -1,4 +1,3 @@
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <!-- Logo con fondo rojo -->
@@ -10,16 +9,19 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/home">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/register">Registro</a>
-                </li>
+                <li class="nav-item"><a class="nav-link active" href="/dashboard">Dashboard</a></li>
+                    
+                    {% if role == 'admin' %}
+                    <li class="nav-item"><a class="nav-link active" href="/admin">Administrar Usuarios</a></li>
+                    {% endif %}
+                    
+                    <li class="nav-item"><a class="nav-link active" href="/heroes">Héroes</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/objetos">Objetos</a></li>
 
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/login">Iniciar Sesión</a>
-                </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white px-3" href="/logout.php">Cerrar sesión</a>
+                    </li>
             </ul>
         </div>
     </div>

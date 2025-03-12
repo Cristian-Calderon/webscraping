@@ -33,7 +33,8 @@ $routes = [
     'detalle_heroe' => 'detalle_heroe.html.twig',
     'objetos' => 'objetos.html.twig',
     'detalle_objeto' => 'detalle_objeto.html.twig',
-    'crear_heroe' => 'crear_heroes.html.twig'  // ✅ Nueva ruta añadida
+    'crear_heroe' => 'crear_heroes.html.twig',
+    'confirmacion_registro' => 'confirmacion_registro.html.twig'
 ];
 
 // 🔹 Si la ruta es "detalle_heroe", obtener información desde la API
