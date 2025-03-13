@@ -16,7 +16,19 @@
     </div>
 
     <h3 class="mt-4 text-white">Habilidades</h3>
-    <div class="abilities-grid" id="hero-abilities"></div>
+    <!-- Nuevo contenedor para el slider de habilidades -->
+    <div class="abilities-slider-container">
+        <div class="swiper abilities-slider">
+            <div class="swiper-wrapper" id="hero-abilities">
+                <!-- Las habilidades se cargarán aquí dinámicamente -->
+            </div>
+            <!-- Controles de navegación -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <!-- Paginación -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
 
     <h3 class="mt-4 text-white">Perfil del Héroe</h3>
     <div class="row">
@@ -95,13 +107,17 @@
         color: white;
     }
 
-    /* Grid de habilidades */
-    .abilities-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 15px;
-        padding: 20px;
-        justify-content: center;
+    /* Contenedor del slider */
+    .abilities-slider-container {
+        padding: 20px 40px;
+        margin-bottom: 30px;
+    }
+
+    /* Estilo para el slider */
+    .abilities-slider {
+        width: 100%;
+        height: 400px; /* Altura fija para el slider */
+        margin: 0 auto;
     }
 
     /* Tarjeta de habilidad */
@@ -111,11 +127,11 @@
         overflow: hidden;
         color: white;
         text-align: center;
-        padding: 15px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         height: 100%;
         box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -125,23 +141,54 @@
         width: 90px;
         height: 90px;
         object-fit: contain;
+        margin-bottom: 15px;
     }
 
     .ability-card h5 {
         font-size: 1.2rem;
         margin-top: 10px;
+        margin-bottom: 15px;
     }
 
     .ability-card p {
         font-size: 0.9rem;
         padding: 10px;
         text-align: justify;
+        overflow-y: auto;
+        max-height: 180px; /* Altura máxima para la descripción */
     }
 
     /* Animación Hover */
     .ability-card:hover {
-        transform: scale(1.05);
+        transform: scale(1.02);
         box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Personalización de los botones de navegación */
+    .swiper-button-next, .swiper-button-prev {
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .swiper-button-next:after, .swiper-button-prev:after {
+        font-size: 18px;
+    }
+
+    /* Personalización de la paginación */
+    .swiper-pagination-bullet {
+        background: #fff;
+        opacity: 0.5;
+    }
+
+    .swiper-pagination-bullet-active {
+        background: #fff;
+        opacity: 1;
     }
 
     .icon {
@@ -150,6 +197,10 @@
         margin-right: 10px;
     }
 </style>
+
+<!-- Incluir Swiper CSS y JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", async function () {
@@ -176,21 +227,34 @@
             document.getElementById("hero-image").src = data.link_img;
             document.getElementById("hero-description").innerText = data.descripcion || "Sin descripción.";
 
-            // Mostrar habilidades en grid
+            // Mostrar habilidades en el slider
             const abilitiesContainer = document.getElementById("hero-abilities");
             abilitiesContainer.innerHTML = "";
-            if (data.habilidades.length > 0) {
+            
+            if (data.habilidades && data.habilidades.length > 0) {
                 data.habilidades.forEach(habilidad => {
-                    abilitiesContainer.innerHTML += `
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `
                         <div class="ability-card">
                             <img src="${habilidad.imagen}" alt="${habilidad.nombre_habilidad}">
                             <h5>${habilidad.nombre_habilidad}</h5>
                             <p>${habilidad.descripcion}</p>
                         </div>`;
+                    abilitiesContainer.appendChild(slide);
                 });
-
+                
+                // Inicializar el Swiper después de cargar las habilidades
+                initSwiper();
             } else {
-                abilitiesContainer.innerHTML = "<p>No hay habilidades registradas.</p>";
+                const emptySlide = document.createElement('div');
+                emptySlide.className = 'swiper-slide';
+                emptySlide.innerHTML = `
+                    <div class="ability-card">
+                        <p>No hay habilidades registradas.</p>
+                    </div>`;
+                abilitiesContainer.appendChild(emptySlide);
+                initSwiper();
             }
 
             // Perfil del Héroe
@@ -236,6 +300,35 @@
             console.error("Error al cargar el héroe:", error);
         }
     });
-</script>
 
+    // Función para inicializar el Swiper
+    function initSwiper() {
+        new Swiper('.abilities-slider', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: false,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            // Configuración responsive
+            breakpoints: {
+                // Cuando la ventana tenga >= 768px de ancho
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 20
+                },
+                // Cuando la ventana tenga >= 992px de ancho
+                992: {
+                    slidesPerView: 3,
+                    spaceBetween: 30
+                }
+            }
+        });
+    }
+</script>
 {% endblock %}
