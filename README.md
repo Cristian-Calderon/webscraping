@@ -193,6 +193,10 @@ Para añadir objetos necesitamos:
 [![Screenshot-from-2025-03-17-23-23-23.png](https://i.postimg.cc/P53wJ0Zq/Screenshot-from-2025-03-17-23-23-23.png)](https://postimg.cc/4YcdFLWC)
 
 
+## Diagrama Entidad relacion
+https://www.figma.com/board/hWudJCZqNz88wOsoExAXk0/Webscraping?node-id=0-1&t=ZGChUxSvmAnpLR73-1
+
+
 ## Autor
 Cristian Calderon 
 
